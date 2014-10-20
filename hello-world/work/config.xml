@@ -13,8 +13,8 @@
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
   <jdks>
     <jdk>
-      <name>My JDK</name>
-      <home>/usr/lib/jvm/java-7-oracle</home>
+      <name>main</name>
+      <home>/usr/lib/jvm/default-java</home>
       <properties/>
     </jdk>
   </jdks>
