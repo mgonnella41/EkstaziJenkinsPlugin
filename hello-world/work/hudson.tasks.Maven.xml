@@ -2,9 +2,16 @@
 <hudson.tasks.Maven_-DescriptorImpl>
   <installations>
     <hudson.tasks.Maven_-MavenInstallation>
-      <name>My Maven</name>
-      <home>/usr/local/apache-maven/apache-maven-3.2.3</home>
-      <properties/>
+      <name>main</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <hudson.tasks.Maven_-MavenInstaller>
+              <id>3.2.2</id>
+            </hudson.tasks.Maven_-MavenInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
     </hudson.tasks.Maven_-MavenInstallation>
   </installations>
 </hudson.tasks.Maven_-DescriptorImpl>
