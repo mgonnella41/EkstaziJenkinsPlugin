@@ -1,2 +1,4 @@
 *.log
 .svn
+.owner
+identity.key
