@@ -2,3 +2,9 @@
 .svn
 .owner
 identity.key
+work/plugins/
+work/queue.xml.bak
+work/secret.key
+work/secrets
+work/updates
+work/userContent
