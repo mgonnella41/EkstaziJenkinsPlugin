@@ -10,3 +10,9 @@ hello-world/work/updates
 hello-world/work/userContent
 hello-world/work/secret.key.not-so-secret
 hello-world/work/hudson.scm.CVSSCM.xml
+hello-world/work/jobs/commons-lang3/builds/
+hello-world/work/jobs/commons-lang3/lastStable
+hello-world/work/jobs/commons-lang3/lastSuccessful
+hello-world/work/jobs/commons-lang3/modules/
+hello-world/work/jobs/commons-lang3/nextBuildNumber
+hello-world/work/jobs/commons-lang3/svnexternals.txt
