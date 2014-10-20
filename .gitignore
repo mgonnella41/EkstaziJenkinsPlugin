@@ -2,9 +2,9 @@
 .svn
 .owner
 identity.key
-work/plugins/
-work/queue.xml.bak
-work/secret.key
-work/secrets
-work/updates
-work/userContent
+hello-world/work/plugins/
+hello-world/work/queue.xml.bak
+hello-world/work/secret.key
+hello-world/work/secrets
+hello-world/work/updates
+hello-world/work/userContent
