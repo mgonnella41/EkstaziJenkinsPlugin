@@ -12,7 +12,7 @@ To determine where this tag is defined, first check the namespace URI,
    so it should be straightforward to find them.
    -->
    <f:section title="Ekstazi Regression Testing">
-   <f:entry name="Ekstazi" title="Ekstazi version to use" field="ekstaziVersion">
+   <f:entry title="Ekstazi version to use" field="EkstaziVersion">
    <f:select />
    </f:entry>
    </f:section>
