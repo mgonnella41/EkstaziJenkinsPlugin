@@ -14,7 +14,7 @@
   <jdks>
     <jdk>
       <name>main</name>
-      <home>/usr/lib/jvm/default-java</home>
+      <home>/usr/lib/jvm/java-7-openjdk-amd64/</home>
       <properties/>
     </jdk>
   </jdks>
