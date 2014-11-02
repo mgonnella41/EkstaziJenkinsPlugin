@@ -3,3 +3,5 @@ ekstazi/target
 ekstazi/.classpath
 ekstazi/.project
 ekstazi/.settings
+ekstazi/.idea
+ekstazi/src/main/main.iml
