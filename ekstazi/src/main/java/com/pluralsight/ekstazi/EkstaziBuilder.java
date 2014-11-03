@@ -121,7 +121,6 @@ public class EkstaziBuilder extends Builder {
             }
             ListBoxModel items = new ListBoxModel(
                     new Option("4.0.1 - October 2014","4.0.1", EkstaziVersion.equals("4.0.1")),
-                    new Option("4.0.0 - Beta", "4.0.0", EkstaziVersion.equals("4.0.0"))
                     );
             return items;
         }
