@@ -26,22 +26,18 @@ import org.xml.sax.SAXException;
 // Builder for Ekstazi that inserts 
 public class EkstaziBuilder extends Builder {
 
-    public final boolean enableEkstazi;
+    public final boolean ekstaziEnable;
+    public final boolean ekstaziForceFailing;
 
     /* Fields in config.jelly must match the parameter names in the "DataBoundConstructor".  The config.jelly is used for
      * job specific config and global.jelly is used for global config
      */
     @DataBoundConstructor
-    public EkstaziBuilder(boolean enableEkstazi) {
-        this.enableEkstazi = enableEkstazi;
+    public EkstaziBuilder(boolean ekstaziEnable, boolean ekstaziForceFailing) {
+        this.ekstaziEnable = ekstaziEnable;
+        this.ekstaziForceFailing = ekstaziForceFailing;
     }
-    /**
-     * We'll use this from the <tt>config.jelly</tt>.
-     */
-    public boolean getEkstaziEnabled() {
-        return enableEkstazi;
-    }
-
+    
     @SuppressWarnings("deprecation")
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
@@ -52,7 +48,7 @@ public class EkstaziBuilder extends Builder {
         xmlFilePath = workspace.toString()+"/pom.xml";
         try {
             EkstaziPOMManager ekstaziPOMManager = new EkstaziPOMManager(xmlFilePath);
-            if(enableEkstazi == true) {
+            if(ekstaziEnable == true) {
                 if(ekstaziPOMManager.checkForEkstazi() == false) {
                     ekstaziPOMManager.addEkstazi(getDescriptor().EkstaziVersion);
                     listener.getLogger().println("Modifying pom.xml located at: "+xmlFilePath+" to enable Ekstazi.");
@@ -120,7 +116,7 @@ public class EkstaziBuilder extends Builder {
                 EkstaziVersion = "4.0.1";
             }
             ListBoxModel items = new ListBoxModel(
-                    new Option("4.0.1 - October 2014","4.0.1", EkstaziVersion.equals("4.0.1")),
+                    new Option("4.0.1 - October 2014","4.0.1", EkstaziVersion.equals("4.0.1"))
                     );
             return items;
         }
