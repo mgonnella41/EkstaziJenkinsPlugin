@@ -41,21 +41,22 @@ public class EkstaziBuilder extends Builder {
     @SuppressWarnings("deprecation")
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener) throws IOException {
+            BuildListener listener) throws IOException, InterruptedException {
         // This is where you 'build' the project.
         FilePath workspace = build.getModuleRoot();
         String xmlFilePath = "";
         xmlFilePath = workspace.toString()+"/pom.xml";
         try {
+            FilePath buildDir = new FilePath(build.getProject().getBuildDir());
             EkstaziPOMManager ekstaziPOMManager = new EkstaziPOMManager(xmlFilePath);
             if(ekstaziEnable == true) {
                 if(ekstaziPOMManager.checkForEkstazi() == false) {
-                    ekstaziPOMManager.addEkstazi(getDescriptor().EkstaziVersion);
+                    ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
                     listener.getLogger().println("Modifying pom.xml located at: "+xmlFilePath+" to enable Ekstazi.");
                 } else {
                     try {
                         ekstaziPOMManager.removeEkstazi();
-                        ekstaziPOMManager.addEkstazi(getDescriptor().EkstaziVersion);
+                        ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
                         listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to enable Ekstazi.");
                     } catch (Exception e) {
                         listener.getLogger().println("Ekstazi not supported for this project.");

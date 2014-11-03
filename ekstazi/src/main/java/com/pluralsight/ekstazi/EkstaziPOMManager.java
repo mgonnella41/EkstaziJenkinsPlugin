@@ -1,5 +1,7 @@
 package com.pluralsight.ekstazi;
 
+import hudson.FilePath;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class EkstaziPOMManager {
         return null;
     }
 
-    public void addEkstazi(String ekstaziVersion) throws TransformerException, 
+    void addEkstaziToPOM(String ekstaziVersion) throws TransformerException, 
            SAXException, IOException, ParserConfigurationException {
                // Build Ekstazi elements to insert
                String ekstazistring1 = "<plugin><groupId>org.ekstazi</groupId><artifactId>ekstazi-maven-plugin</artifactId><version>"+ ekstaziVersion+"</version><executions><execution><id>doit</id><goals><goal>select</goal><goal>restore</goal></goals></execution></executions></plugin>";
@@ -78,6 +80,14 @@ public class EkstaziPOMManager {
 
                // Write the output
                writePOMFile();
+    }
+
+    public void addEkstazi(FilePath runDirectory, FilePath workspace, String ekstaziVersion) throws TransformerException,
+           SAXException, IOException, ParserConfigurationException, InterruptedException {
+               addEkstaziToPOM(ekstaziVersion);
+               runDirectory = runDirectory.child("lastSuccessfulBuild");
+               runDirectory = runDirectory.child("archive");
+               runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
     }
 
     public boolean checkForEkstazi() {
@@ -112,7 +122,7 @@ public class EkstaziPOMManager {
         writePOMFile();
     }
     public void setEkstaziForceFailing() {
-        
+
     }
 
     public void setEkstaziEnable() {

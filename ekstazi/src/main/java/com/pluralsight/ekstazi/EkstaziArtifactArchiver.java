@@ -28,11 +28,10 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
         FilePath workspacePath = build.getWorkspace();
         FilePath ekstaziPath = workspacePath.child(".ekstazi");
         ekstaziPath.deleteRecursive();
+        listener.getLogger().println("Archiving Ekstazi results.");
         } catch (IOException | InterruptedException e) {
             listener.getLogger().println("Unable to archive old Ekstazi output.");
         }
-
-        listener.getLogger().println("Archiving Ekstazi results.");
         return result;
     }
     @Extension
