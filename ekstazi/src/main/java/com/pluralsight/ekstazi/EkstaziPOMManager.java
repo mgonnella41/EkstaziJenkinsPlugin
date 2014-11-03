@@ -42,6 +42,16 @@ public class EkstaziPOMManager {
         return surefire;
     }
 
+    private Node getSurefireExecution() {
+        Node surefire = getSurefireNode();
+        System.out.println(surefire.getTextContent());
+        NodeList children = surefire.getChildNodes();
+        for(int i = 0; i < children.getLength(); i++) {
+            System.out.println(children.item(i).getTextContent());
+        } 
+        return null;
+    }
+
     public void addEkstazi(String ekstaziVersion) throws TransformerException, 
            SAXException, IOException, ParserConfigurationException {
                // Build Ekstazi elements to insert
@@ -64,6 +74,7 @@ public class EkstaziPOMManager {
                // Insert Ekstazi elements to pom
                plugins.appendChild(POMFile.importNode(ekstazinode1, true));
                surefire.appendChild(POMFile.importNode(ekstazinode2, true));
+                
 
                // Write the output
                writePOMFile();
@@ -100,7 +111,13 @@ public class EkstaziPOMManager {
         // Write the output
         writePOMFile();
     }
+    public void setEkstaziForceFailing() {
+        
+    }
 
+    public void setEkstaziEnable() {
+        getSurefireExecution();
+    }
     private Document openPOMFile()
         throws ParserConfigurationException, SAXException, IOException {
         // Load Maven pom file
