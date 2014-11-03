@@ -1,0 +1,20 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<td>
+		<j:set var="entries" value="${it.getLastBuildCauses(job)}" />
+		<j:choose>
+			<j:when test="${entries != null}">
+				<j:forEach var="causeEntry" varStatus="status" items="${entries}">
+					<j:set var="causeIconUrl" value="${causeEntry.key}" />
+					<j:set var="causeShortDesc" value="${causeEntry.value}" />
+					<img width="32" height="32" src="${rootURL}${causeIconUrl}" title="${causeEntry.value}" />
+					<j:if test="${!status.last}">
+						<br/>
+					</j:if>
+				</j:forEach>
+			</j:when>
+			<j:otherwise>
+				<span>${%EkstaziStatusColumn.NoStatus}</span>
+			</j:otherwise>
+		</j:choose>
+	</td>
+</j:jelly>
