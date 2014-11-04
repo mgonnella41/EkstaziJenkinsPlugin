@@ -2,37 +2,42 @@ package com.pluralsight.ekstazi;
 
 import hudson.PluginWrapper;
 import hudson.model.BuildBadgeAction;
-import hudson.model.Cause;
 import jenkins.model.Jenkins;
 
 public class EkstaziBadgeAction implements BuildBadgeAction {
 
-    private final Cause cause;
+    public static final String EKSTAZI_ENABLED_ICON_FILENAME  = "ekstazi-enabled.png";
+    public static final String EKSTAZI_DISABLED_ICON_FILENAME = "ekstazi-disabled.png";
+    public static final String EKSTAZI_ENABLED_TOOLTIP        = "Ekstazi was enabled for this build";
+    public static final String EKSTAZI_DISABLED_TOOLTIP       = "Ekstazi was disabled for this build";
 
-    public EkstaziBadgeAction(Cause cause) {
-        this.cause = cause;
+    private final boolean ekstaziEnabled;
+
+    public EkstaziBadgeAction(boolean ekstaziEnabled) {
+        this.ekstaziEnabled = ekstaziEnabled;
     }
 
     public String getTooltip() {
-        return cause.getShortDescription();
+
+        if(ekstaziEnabled) {
+            return EKSTAZI_ENABLED_TOOLTIP;
+        }
+
+        return EKSTAZI_DISABLED_TOOLTIP;
     }
 
     public String getIcon() {
 
-        String path = null;
-
-        if(true) {                                  //TODO: This needs to be derived from 'EkstaziBuilder.enableEkstazi'
-            path = "ekstazi-enabled.png";
-        } else {
-            path = "ekstazi-disabled.png";
+        if(ekstaziEnabled) {
+            return getIconPath(EKSTAZI_ENABLED_ICON_FILENAME);
         }
 
-        return getIconPath(path);
+        return getIconPath(EKSTAZI_DISABLED_ICON_FILENAME);
     }
 
-    private static String getIconPath(String iconName) {
+    private static String getIconPath(String iconFileName) {
         PluginWrapper wrapper = Jenkins.getInstance().getPluginManager().getPlugin(EkstaziBadgePlugin.class);
-        return "/plugin/" + wrapper.getShortName() + "/images/" + iconName;
+        return "/plugin/" + wrapper.getShortName() + "/images/" + iconFileName;
     }
 
     public static EkstaziBadgePlugin getPlugin() {
@@ -46,7 +51,7 @@ public class EkstaziBadgeAction implements BuildBadgeAction {
 
     @Override
     public String getDisplayName() {
-        return "Ekstazi: " + getTooltip();
+        return getTooltip();
     }
 
     @Override
@@ -54,11 +59,4 @@ public class EkstaziBadgeAction implements BuildBadgeAction {
         return "";
     }
 
-    /*
-     * Helper method to check if user enabled Ekstazi in the global config or not
-     */
-    /*public boolean isEkstaziEnabled() {
-    //TODO::
-
-    }*/
 }

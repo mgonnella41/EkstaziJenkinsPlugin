@@ -47,14 +47,13 @@ public class EkstaziStatusColumn extends ListViewColumn {
         Run r = job.getLastBuild();
 
         if (r != null) {
-            //List<Cause> lastCauses = CauseFilter.filter((List<Cause>) r.getCauses());
             List<Cause> lastCauses = r.getCauses();
 
             if (lastCauses != null) {
                 Map<String,String> causeEntries = new HashMap<String,String>();
 
                 for (Cause cause : lastCauses) {
-                    causeEntries.put(new EkstaziBadgeAction(cause).getIcon(), cause.getShortDescription());
+                    causeEntries.put(new EkstaziBadgeAction(true).getIcon(), cause.getShortDescription());
                 }
                 return causeEntries;
             }
