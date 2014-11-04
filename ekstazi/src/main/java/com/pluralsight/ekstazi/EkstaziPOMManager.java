@@ -82,12 +82,17 @@ public class EkstaziPOMManager {
                writePOMFile();
     }
 
-    public void addEkstazi(FilePath runDirectory, FilePath workspace, String ekstaziVersion) throws TransformerException,
-           SAXException, IOException, ParserConfigurationException, InterruptedException {
+    public void addEkstazi(FilePath runDirectory, FilePath workspace,
+            String ekstaziVersion) throws TransformerException, SAXException,
+           IOException, ParserConfigurationException {
                addEkstaziToPOM(ekstaziVersion);
-               runDirectory = runDirectory.child("lastSuccessfulBuild");
+               runDirectory = runDirectory.child("lastSuccessfulEkstaziBuild");
                runDirectory = runDirectory.child("archive");
-               runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
+        try {
+            runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
+        } catch (InterruptedException | IOException e) {
+            throw new IOException("No previous Ekstazi results found.");
+        }
     }
 
     public boolean checkForEkstazi() {
@@ -99,7 +104,7 @@ public class EkstaziPOMManager {
         }
     }
 
-    public void removeEkstazi() throws TransformerException {
+    public void removeEkstaziFromPOM() throws TransformerException {
         // Get elements to modify
         Node surefire = getSurefireNode();
         NodeList children = surefire.getChildNodes();
@@ -121,6 +126,11 @@ public class EkstaziPOMManager {
         // Write the output
         writePOMFile();
     }
+
+    public void removeEkstazi() throws TransformerException {
+        removeEkstaziFromPOM();
+    }
+
     public void setEkstaziForceFailing() {
 
     }

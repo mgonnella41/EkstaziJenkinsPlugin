@@ -51,12 +51,20 @@ public class EkstaziBuilder extends Builder {
             EkstaziPOMManager ekstaziPOMManager = new EkstaziPOMManager(xmlFilePath);
             if(ekstaziEnable == true) {
                 if(ekstaziPOMManager.checkForEkstazi() == false) {
+                    try {
                     ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
+                    } catch (IOException e) {
+                            listener.getLogger().println(e.toString());
+                    }
                     listener.getLogger().println("Modifying pom.xml located at: "+xmlFilePath+" to enable Ekstazi.");
                 } else {
                     try {
                         ekstaziPOMManager.removeEkstazi();
+                        try {
                         ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
+                        } catch (IOException e) {
+                            listener.getLogger().println(e.toString());
+                        }
                         listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to enable Ekstazi.");
                     } catch (Exception e) {
                         listener.getLogger().println("Ekstazi not supported for this project.");
