@@ -1,6 +1,7 @@
 package com.pluralsight.ekstazi;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.Job;
@@ -10,6 +11,8 @@ import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,18 +49,28 @@ public class EkstaziStatusColumn extends ListViewColumn {
     public Map<String, String> getLastBuildCauses(Job job) {
         Run r = job.getLastBuild();
 
-        if (r != null) {
-            List<Cause> lastCauses = r.getCauses();
+        if (r == null)                          //There was no lastBuild, life's a clean slate!
+            return null;
 
-            if (lastCauses != null) {
-                Map<String,String> causeEntries = new HashMap<String,String>();
+        FilePath ekstaziDir = new FilePath(new File(r.getArtifactsDir() + "/.ekstazi"));
 
-                for (Cause cause : lastCauses) {
-                    causeEntries.put(new EkstaziBadgeAction(true).getIcon(), cause.getShortDescription());
-                }
-                return causeEntries;
+        boolean ekstaziEnabledforLastBuild = false;
+        Map<String, String> statusEntry = new HashMap<String, String>();
+
+        try {
+            if (ekstaziDir.exists()) {
+                ekstaziEnabledforLastBuild = true;
             }
+
+        } catch (IOException e) {
+            //Swallow exception
+        } catch (InterruptedException e) {
+            //Swallow exception
         }
-        return null;
+
+        statusEntry.put(new EkstaziBadgeAction(ekstaziEnabledforLastBuild).getIcon(),
+                        new EkstaziBadgeAction(ekstaziEnabledforLastBuild).getTooltip());
+
+        return statusEntry;
     }
 }
