@@ -35,7 +35,7 @@ public class EkstaziBadgeAction implements BuildBadgeAction {
         return getIconPath(EKSTAZI_DISABLED_ICON_FILENAME);
     }
 
-    private static String getIconPath(String iconFileName) {
+    public static String getIconPath(String iconFileName) {
         PluginWrapper wrapper = Jenkins.getInstance().getPluginManager().getPlugin(EkstaziBadgePlugin.class);
         return "/plugin/" + wrapper.getShortName() + "/images/" + iconFileName;
     }

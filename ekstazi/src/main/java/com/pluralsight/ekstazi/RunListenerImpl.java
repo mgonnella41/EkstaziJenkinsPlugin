@@ -1,7 +1,6 @@
 package com.pluralsight.ekstazi;
 
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;

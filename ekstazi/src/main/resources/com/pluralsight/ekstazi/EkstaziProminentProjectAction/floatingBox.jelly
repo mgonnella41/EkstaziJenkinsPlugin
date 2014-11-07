@@ -1,0 +1,7 @@
+<j:jelly xmlns:j="jelly:core">
+    <j:if test="${it.lastBuildExists()}">
+        <div style="padding:30px">
+            <img src="${rootURL}${it.iconfilename}"/>
+        </div>
+    </j:if>
+</j:jelly>
