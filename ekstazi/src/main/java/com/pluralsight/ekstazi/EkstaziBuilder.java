@@ -125,9 +125,10 @@ public class EkstaziBuilder extends Builder {
                 EkstaziVersion = "4.1.0";
             }
             ListBoxModel items = new ListBoxModel(
-                    new Option("4.1.0 - October 2014","4.1.0", EkstaziVersion.equals("4.0.1")),
+                    new Option("4.1.0 - October 2014","4.1.0", EkstaziVersion.equals("4.1.0")),
                     new Option("4.0.1 - October 2014","4.0.1", EkstaziVersion.equals("4.0.1"))
                     );
+
             return items;
         }
 
@@ -147,6 +148,15 @@ public class EkstaziBuilder extends Builder {
          */
         public String getEkstaziVersion() {
             return EkstaziVersion;
+        }
+
+        public boolean isForceFailingSupported() {
+
+            if (getEkstaziVersion().equals("4.0.1")) {
+                return false;
+            }
+
+            return true;
         }
     }
 }

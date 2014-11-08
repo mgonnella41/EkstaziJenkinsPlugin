@@ -11,10 +11,13 @@
     tags they use. Views are always organized according to its owner class,
     so it should be straightforward to find them.
   -->
-<f:entry name="ekstaziEnable" title="Enable" field="ekstaziEnable">
+    <f:entry name="ekstaziEnable" title="Enable" field="ekstaziEnable">
         <f:checkbox name="ekstaziEnable" value="${it.ekstaziEnable}"/>
-</f:entry>
-<f:entry name="ekstaziForceFailing" title="Force Failing Tests" field="ekstaziForceFailing">
-        <f:checkbox name="ekstaziForceFailing" value="${it.ekstaziForceFailing}"/>
-</f:entry>
+    </f:entry>
+
+    <j:if test="${from.isForceFailingSupported()}">
+        <f:entry name="ekstaziForceFailing" title="Force Failing Tests" field="ekstaziForceFailing">
+            <f:checkbox name="ekstaziForceFailing" value="${it.ekstaziForceFailing}"/>
+        </f:entry>
+    </j:if>
 </j:jelly>
