@@ -11,11 +11,11 @@ import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import jenkins.model.ArtifactManagerConfiguration;
 
 import net.sf.json.JSONObject;
 
@@ -37,12 +37,13 @@ public class EkstaziBuilder extends Builder {
         this.ekstaziEnable = ekstaziEnable;
         this.ekstaziForceFailing = ekstaziForceFailing;
     }
-    
+
     @SuppressWarnings("deprecation")
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
             BuildListener listener) throws IOException, InterruptedException {
-        // This is where you 'build' the project.
+
+        // Get the POM for this project
         FilePath workspace = build.getModuleRoot();
         String xmlFilePath = "";
         xmlFilePath = workspace.toString()+"/pom.xml";
@@ -50,18 +51,24 @@ public class EkstaziBuilder extends Builder {
             FilePath buildDir = new FilePath(build.getProject().getBuildDir());
             EkstaziPOMManager ekstaziPOMManager = new EkstaziPOMManager(xmlFilePath);
             if(ekstaziEnable == true) {
+                // Add a post build step to collect the Ekstazi results
+                EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
+                build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
+
+                // Add Ekstazi to POM if not already in POM
                 if(ekstaziPOMManager.checkForEkstazi() == false) {
                     try {
-                    ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
+                        ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
                     } catch (IOException e) {
-                            listener.getLogger().println(e.toString());
+                        listener.getLogger().println(e.toString());
                     }
                     listener.getLogger().println("Modifying pom.xml located at: "+xmlFilePath+" to enable Ekstazi.");
                 } else {
+                    // Clean out whatever Ekstazi version is in POM and add the selected Jenkins version
                     try {
                         ekstaziPOMManager.removeEkstazi();
                         try {
-                        ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
+                            ekstaziPOMManager.addEkstazi(buildDir, build.getWorkspace(), getDescriptor().EkstaziVersion);
                         } catch (IOException e) {
                             listener.getLogger().println(e.toString());
                         }
@@ -71,6 +78,7 @@ public class EkstaziBuilder extends Builder {
                     }
                 }
             } else {
+                // remove Ekstazi from POM if it is disabled
                 if(ekstaziPOMManager.checkForEkstazi()) {
                     ekstaziPOMManager.removeEkstazi();
                     listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to disable Ekstazi.");
