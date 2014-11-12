@@ -27,8 +27,7 @@ public class EkstaziMavenManager extends EkstaziManager {
     private Document POMFile;
 
     public EkstaziMavenManager(String POMFileName, String Version)
-            throws ParserConfigurationException, SAXException, IOException,
-            EkstaziException {
+        throws ParserConfigurationException, SAXException, IOException, EkstaziException {
         super(Version);
         this.POMFileName = POMFileName;
         this.POMFile = openPOMFile();
@@ -46,57 +45,78 @@ public class EkstaziMavenManager extends EkstaziManager {
         return surefire;
     }
 
-    private Node getSurefireExecution() {
-        Node surefire = getSurefireNode();
-        System.out.println(surefire.getTextContent());
-        NodeList children = surefire.getChildNodes();
-        for(int i = 0; i < children.getLength(); i++) {
-            System.out.println(children.item(i).getTextContent());
-        } 
-        return null;
+    private Node getSurefireArgLine() throws SAXException, IOException,
+            ParserConfigurationException {
+                Element surefire = (Element)getSurefireNode();
+                Element executions = (Element)surefire.getElementsByTagName("executions").item(0);
+                Element execution = (Element)executions.getElementsByTagName("execution").item(0);
+                Element configuration = (Element)execution.getElementsByTagName("configuration").item(0);
+                Node argLine = execution.getElementsByTagName("argLine").item(0);
+                if (execution.getElementsByTagName("argLine").getLength() == 0) {
+                    String ekstaziString = "<argLine>${argLine}</argLine>";
+                    Element ekstaziNode = DocumentBuilderFactory.newInstance()
+                        .newDocumentBuilder()
+                        .parse(new ByteArrayInputStream(ekstaziString.getBytes()))
+                        .getDocumentElement();
+
+                    argLine = configuration.appendChild(POMFile.importNode(ekstaziNode, true));
+                    try {
+                        writePOMFile();
+                        this.POMFile = openPOMFile();
+                        surefire = (Element)getSurefireNode();
+                        executions = (Element)surefire.getElementsByTagName("executions").item(0);
+                        execution = (Element)executions.getElementsByTagName("execution").item(0);
+                        configuration = (Element)execution.getElementsByTagName("configuration").item(0);
+                        argLine = execution.getElementsByTagName("argLine").item(0);
+                            } catch (TransformerException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return argLine;
     }
 
     protected void add(FilePath runDirectory, FilePath workspace,
             String ekstaziVersion) {
-         // Insert Ekstazi into POM
-               // Build Ekstazi elements to insert
-               String ekstazistring1 = "<plugin><groupId>org.ekstazi</groupId><artifactId>ekstazi-maven-plugin</artifactId><version>"+ ekstaziVersion+"</version><executions><execution><id>doit</id><goals><goal>select</goal><goal>restore</goal></goals></execution></executions></plugin>";
-               String ekstazistring2 = "<configuration><excludesFile>myExcludes</excludesFile></configuration>";
+        // Insert Ekstazi into POM
+        // Build Ekstazi elements to insert
+        String ekstazistring1 = "<plugin><groupId>org.ekstazi</groupId><artifactId>ekstazi-maven-plugin</artifactId><version>"+ ekstaziVersion+"</version><executions><execution><id>doit</id><goals><goal>select</goal><goal>restore</goal></goals></execution></executions></plugin>";
+        String ekstazistring2 = "<configuration><excludesFile>myExcludes</excludesFile></configuration>";
         Element ekstazinode1;
         try {
             ekstazinode1 = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder()
-                    .parse(new ByteArrayInputStream(ekstazistring1.getBytes()))
-                    .getDocumentElement();
-               Element ekstazinode2 =  DocumentBuilderFactory
-                   .newInstance()
-                   .newDocumentBuilder()
-                   .parse(new ByteArrayInputStream(ekstazistring2.getBytes()))
-                   .getDocumentElement();
-               // Get elements to modify
-               Node plugins = POMFile.getElementsByTagName("plugins").item(0);
-               Node surefire = getSurefireNode();
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(ekstazistring1.getBytes()))
+                .getDocumentElement();
+            Element ekstazinode2 =  DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(ekstazistring2.getBytes()))
+                .getDocumentElement();
+            // Get elements to modify
+            Node plugins = POMFile.getElementsByTagName("plugins").item(0);
+            Node surefire = getSurefireNode();
 
-               // Insert Ekstazi elements to pom
-               plugins.appendChild(POMFile.importNode(ekstazinode1, true));
-               surefire.appendChild(POMFile.importNode(ekstazinode2, true));
+            // Insert Ekstazi elements to pom
+            plugins.appendChild(POMFile.importNode(ekstazinode1, true));
+            surefire.appendChild(POMFile.importNode(ekstazinode2, true));
 
 
-               // Write the output
-               writePOMFile();
+            // Write the output
+            writePOMFile();
+            this.POMFile = openPOMFile();
 
-               // handle the copying of previous Ekstazi results to the workspace
-               runDirectory = runDirectory.child("lastSuccessfulEkstaziBuild");
-               runDirectory = runDirectory.child("archive");
-               try {
-                   runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
-               } catch (InterruptedException | IOException e) {
-                   throw new IOException("No previous Ekstazi results found.");
-               }
+            // handle the copying of previous Ekstazi results to the workspace
+            runDirectory = runDirectory.child("lastSuccessfulEkstaziBuild");
+            runDirectory = runDirectory.child("archive");
+            try {
+                runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
+            } catch (InterruptedException | IOException e) {
+                throw new IOException("No previous Ekstazi results found.");
+            }
         } catch (SAXException | IOException | ParserConfigurationException |
-        TransformerException e1) {
+                TransformerException e1) {
             e1.printStackTrace();
-        }
+                }
     }
 
     protected boolean checkPresent() {
@@ -127,16 +147,42 @@ public class EkstaziMavenManager extends EkstaziManager {
             }
         }
 
-        // Write the output
+        Node argLine;
+        try {
+            argLine = getSurefireArgLine();
+            argLine.getParentNode().removeChild(argLine);
+
+            // Write the output
+            writePOMFile();
+            this.POMFile = openPOMFile();
+        } catch (TransformerException | ParserConfigurationException
+                | SAXException | IOException e) {
+            System.out.println("Unable to write Ekstazi POM file.");
+                }
+    }
+
+    protected void setForceFailing() throws SAXException, IOException,
+            ParserConfigurationException {
+                  Node argLine = getSurefireArgLine();
+                  argLine.setTextContent(argLine.getTextContent()+" -forcefailing");
         try {
             writePOMFile();
+            this.POMFile = openPOMFile();
         } catch (TransformerException e) {
-            System.out.println("Unable to write Ekstazi POM file.");
+            e.printStackTrace();
         }
     }
 
-    protected void setForceFailing() {
-
+    protected void setDisable() throws SAXException, IOException,
+              ParserConfigurationException {
+                  Node argLine = getSurefireArgLine();
+                  argLine.setTextContent(argLine.getTextContent()+" -skipme");
+        try {
+            writePOMFile();
+            this.POMFile = openPOMFile();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
     }
 
     private Document openPOMFile()
