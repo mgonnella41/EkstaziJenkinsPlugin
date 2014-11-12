@@ -17,7 +17,7 @@ public abstract class EkstaziManager {
 
     protected List<Feature> features;
 
-    protected EkstaziManager(String Version) {
+    protected EkstaziManager(String Version) throws EkstaziException {
         features = new ArrayList<Feature>();
         switch (Version) {
             case "4.0.1":
@@ -26,28 +26,33 @@ public abstract class EkstaziManager {
                 features.add(Feature.ENABLE);
                 features.add(Feature.FORCEFAILING);
             default:
-                // throw exception
+                throw new EkstaziException("Ekstazi version not supported");
         }
     }
 
-    public abstract boolean checkForEkstazi();
+    protected abstract boolean checkPresent();
 
-    public abstract void addEkstazi(FilePath runDirectory, FilePath workspace,
+    // Use enable to
+    protected abstract void add(FilePath runDirectory, FilePath workspace,
             String ekstaziVersion);
 
-    public abstract void removeEkstazi();
+    protected abstract void remove();
 
-    public void setEkstaziForceFailing() {
-        if(!features.contains(Feature.FORCEFAILING)) {
-            // throw exception
-        }
-    }
-
-    public void setEkstaziEnable() throws TransformerException {
+    public void enable(FilePath runDirectory, FilePath workspace,
+            String ekstaziVersion) {
         if(!features.contains(Feature.ENABLE)) {
-            removeEkstazi();
-            return;
+            if(checkPresent()) {
+                remove();
+            }
+            add(runDirectory, workspace, ekstaziVersion);
         }
     }
 
+    public void disable() throws TransformerException{
+        if(!features.contains(Feature.ENABLE)) {
+            if(checkPresent()) {
+                remove();
+            }
+        }
+    }
 }

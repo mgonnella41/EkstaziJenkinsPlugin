@@ -27,7 +27,8 @@ public class EkstaziMavenManager extends EkstaziManager {
     private Document POMFile;
 
     public EkstaziMavenManager(String POMFileName, String Version)
-        throws ParserConfigurationException, SAXException, IOException {
+            throws ParserConfigurationException, SAXException, IOException,
+            EkstaziException {
         super(Version);
         this.POMFileName = POMFileName;
         this.POMFile = openPOMFile();
@@ -55,8 +56,7 @@ public class EkstaziMavenManager extends EkstaziManager {
         return null;
     }
 
-    @Override
-    public void addEkstazi(FilePath runDirectory, FilePath workspace,
+    protected void add(FilePath runDirectory, FilePath workspace,
             String ekstaziVersion) {
          // Insert Ekstazi into POM
                // Build Ekstazi elements to insert
@@ -99,7 +99,7 @@ public class EkstaziMavenManager extends EkstaziManager {
         }
     }
 
-    public boolean checkForEkstazi() {
+    protected boolean checkPresent() {
         Node plugins = POMFile.getElementsByTagName("plugins").item(0);
         if(plugins.getTextContent().contains("ekstazi-maven-plugin")) {
             return true;
@@ -108,7 +108,7 @@ public class EkstaziMavenManager extends EkstaziManager {
         }
     }
 
-    public void removeEkstazi() {
+    protected void remove() {
         // Get elements to modify
         Node surefire = getSurefireNode();
         NodeList children = surefire.getChildNodes();
@@ -135,12 +135,8 @@ public class EkstaziMavenManager extends EkstaziManager {
         }
     }
 
-    public void setEkstaziForceFailing() {
+    protected void setForceFailing() {
 
-    }
-
-    public void setEkstaziEnable() {
-        getSurefireExecution();
     }
 
     private Document openPOMFile()
