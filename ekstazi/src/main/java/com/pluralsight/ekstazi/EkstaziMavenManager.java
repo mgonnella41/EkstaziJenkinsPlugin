@@ -22,12 +22,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class EkstaziPOMManager {
+public class EkstaziMavenManager extends EkstaziManager {
     private String POMFileName;
     private Document POMFile;
 
-    public EkstaziPOMManager(String POMFileName)
+    public EkstaziMavenManager(String POMFileName, String Version)
         throws ParserConfigurationException, SAXException, IOException {
+        super(Version);
         this.POMFileName = POMFileName;
         this.POMFile = openPOMFile();
     }
@@ -54,16 +55,19 @@ public class EkstaziPOMManager {
         return null;
     }
 
-    void addEkstaziToPOM(String ekstaziVersion) throws TransformerException, 
-           SAXException, IOException, ParserConfigurationException {
+    @Override
+    public void addEkstazi(FilePath runDirectory, FilePath workspace,
+            String ekstaziVersion) {
+         // Insert Ekstazi into POM
                // Build Ekstazi elements to insert
                String ekstazistring1 = "<plugin><groupId>org.ekstazi</groupId><artifactId>ekstazi-maven-plugin</artifactId><version>"+ ekstaziVersion+"</version><executions><execution><id>doit</id><goals><goal>select</goal><goal>restore</goal></goals></execution></executions></plugin>";
                String ekstazistring2 = "<configuration><excludesFile>myExcludes</excludesFile></configuration>";
-               Element ekstazinode1 =  DocumentBuilderFactory
-                   .newInstance()
-                   .newDocumentBuilder()
-                   .parse(new ByteArrayInputStream(ekstazistring1.getBytes()))
-                   .getDocumentElement();
+        Element ekstazinode1;
+        try {
+            ekstazinode1 = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(ekstazistring1.getBytes()))
+                    .getDocumentElement();
                Element ekstazinode2 =  DocumentBuilderFactory
                    .newInstance()
                    .newDocumentBuilder()
@@ -76,22 +80,22 @@ public class EkstaziPOMManager {
                // Insert Ekstazi elements to pom
                plugins.appendChild(POMFile.importNode(ekstazinode1, true));
                surefire.appendChild(POMFile.importNode(ekstazinode2, true));
-                
+
 
                // Write the output
                writePOMFile();
-    }
 
-    public void addEkstazi(FilePath runDirectory, FilePath workspace,
-            String ekstaziVersion) throws TransformerException, SAXException,
-           IOException, ParserConfigurationException {
-               addEkstaziToPOM(ekstaziVersion);
+               // handle the copying of previous Ekstazi results to the workspace
                runDirectory = runDirectory.child("lastSuccessfulEkstaziBuild");
                runDirectory = runDirectory.child("archive");
-        try {
-            runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
-        } catch (InterruptedException | IOException e) {
-            throw new IOException("No previous Ekstazi results found.");
+               try {
+                   runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
+               } catch (InterruptedException | IOException e) {
+                   throw new IOException("No previous Ekstazi results found.");
+               }
+        } catch (SAXException | IOException | ParserConfigurationException |
+        TransformerException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -104,7 +108,7 @@ public class EkstaziPOMManager {
         }
     }
 
-    public void removeEkstaziFromPOM() throws TransformerException {
+    public void removeEkstazi() {
         // Get elements to modify
         Node surefire = getSurefireNode();
         NodeList children = surefire.getChildNodes();
@@ -124,11 +128,11 @@ public class EkstaziPOMManager {
         }
 
         // Write the output
-        writePOMFile();
-    }
-
-    public void removeEkstazi() throws TransformerException {
-        removeEkstaziFromPOM();
+        try {
+            writePOMFile();
+        } catch (TransformerException e) {
+            System.out.println("Unable to write Ekstazi POM file.");
+        }
     }
 
     public void setEkstaziForceFailing() {
@@ -138,6 +142,7 @@ public class EkstaziPOMManager {
     public void setEkstaziEnable() {
         getSurefireExecution();
     }
+
     private Document openPOMFile()
         throws ParserConfigurationException, SAXException, IOException {
         // Load Maven pom file
