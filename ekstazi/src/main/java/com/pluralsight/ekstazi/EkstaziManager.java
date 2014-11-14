@@ -40,21 +40,16 @@ public abstract class EkstaziManager {
 
     // Use enable to
     protected abstract void add(FilePath runDirectory, FilePath workspace,
-            String ekstaziVersion);
+            String ekstaziVersion, boolean skipMe, boolean forceFailing);
 
     protected abstract void remove();
 
-    protected abstract void setDisable() throws SAXException, IOException, ParserConfigurationException;
-
-    protected abstract void setForceFailing() throws SAXException, IOException, ParserConfigurationException;
-
-
-    public void enable(FilePath runDirectory, FilePath workspace,
-            String ekstaziVersion) {
+    public void enable(FilePath runDirectory, FilePath workspace, String ekstaziVersion,
+            boolean forceFailing) {
             if(checkPresent()) {
                 remove();
             }
-            add(runDirectory, workspace, ekstaziVersion);
+            add(runDirectory, workspace, ekstaziVersion, true, forceFailing);
     }
 
     public void disable(FilePath runDirectory, FilePath workspace, 
@@ -64,8 +59,7 @@ public abstract class EkstaziManager {
                    remove();
                }
                if(features.contains(Feature.ENABLE)) {
-                   add(runDirectory, workspace, ekstaziVersion);
-                   setDisable();
+                   add(runDirectory, workspace, ekstaziVersion, false, false);
                }
     }
 }
