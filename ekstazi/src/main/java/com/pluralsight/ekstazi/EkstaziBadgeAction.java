@@ -6,33 +6,56 @@ import jenkins.model.Jenkins;
 
 public class EkstaziBadgeAction implements BuildBadgeAction {
 
-    public static final String EKSTAZI_ENABLED_ICON_FILENAME  = "ekstazi-enabled.png";
-    public static final String EKSTAZI_DISABLED_ICON_FILENAME = "ekstazi-disabled.png";
-    public static final String EKSTAZI_ENABLED_TOOLTIP        = "Ekstazi was enabled for this build";
-    public static final String EKSTAZI_DISABLED_TOOLTIP       = "Ekstazi was disabled for this build";
+    public static final String EKSTAZI_ENABLED_ICON_FILENAME        = "ekstazi-enabled.png";
+    public static final String EKSTAZI_DISABLED_ICON_FILENAME       = "ekstazi-disabled.png";
+    public static final String EKSTAZI_ENABLED_ANIME_ICON_FILENAME  = "ekstazi-enabled-anime.gif";
+    public static final String EKSTAZI_DISABLED_ANIME_ICON_FILENAME = "ekstazi-disabled-anime.gif";
+    public static final String EKSTAZI_ENABLED_TOOLTIP              = "Ekstazi was enabled for this build";
+    public static final String EKSTAZI_DISABLED_TOOLTIP             = "Ekstazi was disabled for this build";
+    public static final String EKSTAZI_ENABLED_ANIME_TOOLTIP        = "Build is in progress";
+    public static final String EKSTAZI_DISABLED_ANIME_TOOLTIP       = "Build is in progress";
+
 
     private final boolean ekstaziEnabled;
+    private final boolean animeEnabled;
 
-    public EkstaziBadgeAction(boolean ekstaziEnabled) {
+    public EkstaziBadgeAction(boolean ekstaziEnabled, boolean animeEnabled) {
         this.ekstaziEnabled = ekstaziEnabled;
+        this.animeEnabled   = animeEnabled;
     }
 
     public String getTooltip() {
 
         if(ekstaziEnabled) {
-            return EKSTAZI_ENABLED_TOOLTIP;
+            if (animeEnabled) {
+                return EKSTAZI_ENABLED_ANIME_TOOLTIP;
+            } else {
+                return EKSTAZI_ENABLED_TOOLTIP;
+            }
         }
 
-        return EKSTAZI_DISABLED_TOOLTIP;
+        if (animeEnabled) {
+            return EKSTAZI_DISABLED_ANIME_TOOLTIP;
+        } else {
+            return EKSTAZI_DISABLED_TOOLTIP;
+        }
     }
 
     public String getIcon() {
 
         if(ekstaziEnabled) {
-            return getIconPath(EKSTAZI_ENABLED_ICON_FILENAME);
+            if (animeEnabled) {
+                return getIconPath(EKSTAZI_ENABLED_ANIME_ICON_FILENAME);
+            } else {
+                return getIconPath(EKSTAZI_ENABLED_ICON_FILENAME);
+            }
         }
 
-        return getIconPath(EKSTAZI_DISABLED_ICON_FILENAME);
+        if (animeEnabled) {
+            return getIconPath(EKSTAZI_DISABLED_ANIME_ICON_FILENAME);
+        } else {
+            return getIconPath(EKSTAZI_DISABLED_ICON_FILENAME);
+        }
     }
 
     public static String getIconPath(String iconFileName) {
