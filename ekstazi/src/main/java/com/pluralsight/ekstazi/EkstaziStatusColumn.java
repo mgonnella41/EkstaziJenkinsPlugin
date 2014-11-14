@@ -68,8 +68,8 @@ public class EkstaziStatusColumn extends ListViewColumn {
             //Swallow exception
         }
 
-        statusEntry.put(new EkstaziBadgeAction(ekstaziEnabledforLastBuild).getIcon(),
-                        new EkstaziBadgeAction(ekstaziEnabledforLastBuild).getTooltip());
+        statusEntry.put(new EkstaziBadgeAction(ekstaziEnabledforLastBuild, false).getIcon(),
+                        new EkstaziBadgeAction(ekstaziEnabledforLastBuild, false).getTooltip());
 
         return statusEntry;
     }
