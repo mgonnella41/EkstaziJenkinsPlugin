@@ -99,7 +99,17 @@ public class EkstaziMavenManager extends EkstaziManager {
 
     protected boolean checkPresent() {
         Node plugins = POMFile.getElementsByTagName("plugins").item(0);
-        if(plugins.getTextContent().contains("ekstazi-maven-plugin")) {
+        if(plugins.getTextContent().contains("ekstazi-maven-plugin"))  {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean isEnabled() {
+        Element plugins = (Element)POMFile.getElementsByTagName("plugins").item(0);
+        NodeList skipme = plugins.getElementsByTagName("skipme");
+        if(checkPresent() && skipme.getLength() == 0)  {
             return true;
         } else {
             return false;

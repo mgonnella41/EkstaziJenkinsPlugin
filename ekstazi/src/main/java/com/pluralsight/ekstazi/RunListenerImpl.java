@@ -65,7 +65,7 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
                     String ekstaziVersion = desc.getEkstaziVersion();
 
                     EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFilePath, ekstaziVersion);
-                    ekstaziEnabled = ekstaziManager.checkPresent();
+                    ekstaziEnabled = ekstaziManager.isEnabled();
                 }
 
                 build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));

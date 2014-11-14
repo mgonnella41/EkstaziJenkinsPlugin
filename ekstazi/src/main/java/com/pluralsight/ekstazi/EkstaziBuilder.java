@@ -50,14 +50,12 @@ public class EkstaziBuilder extends Builder {
             FilePath buildDir = new FilePath(build.getProject().getBuildDir());
             ekstaziManager = new EkstaziMavenManager(xmlFilePath, getDescriptor().getEkstaziVersion());
             if(ekstaziEnable == true) {
-                System.out.println("add");
                 // Add a post build step to collect the Ekstazi results
                 EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
                 build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
                 ekstaziManager.enable(buildDir, build.getWorkspace(), getDescriptor().getEkstaziVersion(), this.ekstaziForceFailing);
             } else {
                 // remove Ekstazi from POM if it is disabled
-                System.out.println(getDescriptor().getEkstaziVersion());
                 ekstaziManager.disable(buildDir, build.getWorkspace(), getDescriptor().getEkstaziVersion());
                 listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to disable Ekstazi.");
             }
