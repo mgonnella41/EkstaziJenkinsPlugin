@@ -2,7 +2,9 @@ package com.pluralsight.ekstazi;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildBadgeAction;
+import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
 import org.xml.sax.SAXException;
@@ -45,7 +47,6 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
         } else {
             badgeApply(build, listener, lastBuild.getModuleRoot(), true);             //we DO need an animated icon during the build is going on (for lastBuild)
         }
-
 
         super.onStarted(build, listener);
     }
