@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class EkstaziProminentProjectAction implements ProminentProjectAction {
 
-    public static final String DISPLAY_NAME = "Last Ekstazi Build";
+    public static final String DISPLAY_NAME = "Last Build";
 
 
     @SuppressWarnings("rawtypes")
