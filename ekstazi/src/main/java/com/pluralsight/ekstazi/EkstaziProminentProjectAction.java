@@ -5,6 +5,7 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ProminentProjectAction;
+import jenkins.model.Jenkins;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,6 +76,8 @@ public class EkstaziProminentProjectAction implements ProminentProjectAction {
 
     @Override
     public String getUrlName() {
-        return null;
+        //return project.getLastBuild().getAbsoluteUrl();
+        return Jenkins.getInstance().getRootUrl() + project.getLastBuild().getUrl();
+
     }
 }
