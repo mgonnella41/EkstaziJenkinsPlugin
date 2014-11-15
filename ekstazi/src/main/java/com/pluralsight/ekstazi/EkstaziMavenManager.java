@@ -5,6 +5,7 @@ import hudson.FilePath;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,9 +23,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class EkstaziMavenManager extends EkstaziManager {
+public class EkstaziMavenManager extends EkstaziManager implements Serializable {
+    static final long serialVersionUID = 2L;
     private String POMFileName;
-    private Document POMFile;
+    private transient Document POMFile;
 
     public EkstaziMavenManager(String POMFileName, String Version)
         throws ParserConfigurationException, SAXException, IOException, EkstaziException {

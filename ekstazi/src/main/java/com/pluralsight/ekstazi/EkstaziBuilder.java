@@ -5,12 +5,15 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Collections;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,8 +26,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.xml.sax.SAXException;
 
 // Builder for Ekstazi that inserts 
-public class EkstaziBuilder extends Builder {
-
+public class EkstaziBuilder extends Builder implements Serializable {
     public final boolean ekstaziEnable;
     public final boolean ekstaziForceFailing;
 
@@ -39,30 +41,48 @@ public class EkstaziBuilder extends Builder {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener) throws IOException, InterruptedException {
+    public boolean perform(final AbstractBuild<?, ?> build, Launcher launcher,
+            final BuildListener listener) throws IOException, InterruptedException {
+
+        // Declare inputs for callable that can be runo n master or slave
+        final FilePath workspace = build.getModuleRoot();
+        final FilePath buildWorkspace = build.getWorkspace();
+        final FilePath buildDir = new FilePath(build.getProject().getBuildDir());
+        final String ekstaziVersion = getDescriptor().getEkstaziVersion();
+
+        // Enable archiver for Ekstazi artifacts
+        if (ekstaziEnable == true) {
+            EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
+            build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
+        }
+
+        // Use callable to support slave nodes
+        Callable<String, IOException> task = new Callable<String, IOException>() {
+            static final long serialVersionUID = 1L;
+            public String call() throws IOException {
         EkstaziManager ekstaziManager;
         // Get the POM for this project
-        FilePath workspace = build.getModuleRoot();
-        String xmlFilePath = "";
-        xmlFilePath = workspace.toString()+"/pom.xml";
+        final String xmlFilePath = workspace.toString()+"/pom.xml";
         try {
-            FilePath buildDir = new FilePath(build.getProject().getBuildDir());
-            ekstaziManager = new EkstaziMavenManager(xmlFilePath, getDescriptor().getEkstaziVersion());
+            ekstaziManager = new EkstaziMavenManager(xmlFilePath, ekstaziVersion);
             if(ekstaziEnable == true) {
                 // Add a post build step to collect the Ekstazi results
-                EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
-                build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
-                ekstaziManager.enable(buildDir, build.getWorkspace(), getDescriptor().getEkstaziVersion(), this.ekstaziForceFailing);
+                ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
             } else {
                 // remove Ekstazi from POM if it is disabled
-                ekstaziManager.disable(buildDir, build.getWorkspace(), getDescriptor().getEkstaziVersion());
+                ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
                 listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to disable Ekstazi.");
             }
-        } catch (EkstaziException | TransformerException | SAXException | ParserConfigurationException e) {
+                } catch (EkstaziException | SAXException | TransformerException
+                        | ParserConfigurationException e) {
             listener.getLogger().println("Ekstazi not supported for this project.");
             e.printStackTrace();
         }
+                return InetAddress.getLocalHost().getHostName();
+            }
+        };
+
+        launcher.getChannel().call(task);
         return true;
     }
 

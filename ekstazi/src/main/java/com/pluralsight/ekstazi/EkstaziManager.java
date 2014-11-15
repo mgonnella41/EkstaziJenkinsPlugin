@@ -3,6 +3,7 @@ package com.pluralsight.ekstazi;
 import hudson.FilePath;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,8 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-public abstract class EkstaziManager {
+public abstract class EkstaziManager implements Serializable {
+    static final long serialVersionUID = 3L;
 
     // Features that this Ekstazi Manager supports
     public enum Feature{
@@ -20,7 +22,7 @@ public abstract class EkstaziManager {
         FORCEALL // Force all tests to run
     }
 
-    protected List<Feature> features;
+    protected ArrayList<Feature> features;
 
     protected EkstaziManager(String Version) throws EkstaziException {
         features = new ArrayList<Feature>();
