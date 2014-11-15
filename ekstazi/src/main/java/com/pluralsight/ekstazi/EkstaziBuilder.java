@@ -102,9 +102,11 @@ public class EkstaziBuilder extends Builder {
         public ListBoxModel doFillEkstaziVersionItems() {
             // Set default version
             if (EkstaziVersion == null) {
-                EkstaziVersion = "4.1.0";
+                EkstaziVersion = "4.3.0";
             }
             ListBoxModel items = new ListBoxModel(
+                    new Option("4.3.0 - November 2014","4.3.0", EkstaziVersion.equals("4.3.0")),
+                    new Option("4.2.0 - November 2014","4.2.0", EkstaziVersion.equals("4.2.0")),
                     new Option("4.1.0 - October 2014","4.1.0", EkstaziVersion.equals("4.1.0")),
                     new Option("4.0.1 - October 2014","4.0.1", EkstaziVersion.equals("4.0.1"))
                     );

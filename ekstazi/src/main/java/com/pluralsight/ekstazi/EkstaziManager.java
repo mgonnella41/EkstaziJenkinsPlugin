@@ -16,7 +16,8 @@ public abstract class EkstaziManager {
     // Features that this Ekstazi Manager supports
     public enum Feature{
         ENABLE, // Can be disabled and enabled 
-        FORCEFAILING // Force failing flag can be set
+        FORCEFAILING, // Force failing flag can be set
+        FORCEALL // Force all tests to run
     }
 
     protected List<Feature> features;
@@ -30,6 +31,15 @@ public abstract class EkstaziManager {
             case "4.1.0":
                 features.add(Feature.ENABLE);
                 features.add(Feature.FORCEFAILING);
+                break;
+            case "4.2.0":
+                features.add(Feature.ENABLE);
+                features.add(Feature.FORCEFAILING);
+                break;
+            case "4.3.0":
+                features.add(Feature.ENABLE);
+                features.add(Feature.FORCEFAILING);
+                features.add(Feature.FORCEALL); // Not yet implemented
                 break;
             default:
                 throw new EkstaziException("Ekstazi version not supported");
