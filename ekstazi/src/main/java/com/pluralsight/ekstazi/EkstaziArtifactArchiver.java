@@ -26,20 +26,15 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
         try {
             // Remove Ekstazi from list of post-build actions since it is automatically added
             build.getProject().getPublishersList().remove(EkstaziArtifactArchiver.class);
-            FilePath workspacePath = build.getWorkspace();
-            FilePath ekstaziPath = workspacePath.child(".ekstazi");
-            // Check if there are Ekstazi build artifacts
-            if(ekstaziPath.exists()) {
                 // Archive Ekstazi build artifacts
                 result = super.perform(build, launcher, listener);
                 // Remove Ekstazi from workspace
-                ekstaziPath.deleteRecursive();
+                // ekstaziPath.deleteRecursive();
                 FilePath buildDir = new FilePath(build.getProject().getBuildDir());
-                buildDir = buildDir.child("lastSuccessfulEkstaziBuild");
+                buildDir = buildDir.child("lastEkstaziBuild");
                 // Add a symlink for the last successful Ekstazi build
                 buildDir.symlinkTo(Integer.toString(build.number), listener);
                 listener.getLogger().println("Archiving Ekstazi results.");
-            }
         } catch (IOException | InterruptedException e) {
             listener.getLogger().println("Unable to archive old Ekstazi output.");
         }

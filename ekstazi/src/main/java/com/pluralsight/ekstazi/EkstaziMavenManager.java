@@ -115,7 +115,7 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
             this.POMFile = openPOMFile();
 
             // handle the copying of previous Ekstazi results to the workspace
-            runDirectory = runDirectory.child("lastSuccessfulEkstaziBuild");
+            runDirectory = runDirectory.child("lastEkstaziBuild");
             runDirectory = runDirectory.child("archive");
             try {
                 runDirectory.copyRecursiveTo(".ekstazi/*", "", workspace);
