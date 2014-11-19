@@ -1,6 +1,12 @@
 package com.pluralsight.ekstazi;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -15,9 +21,13 @@ import hudson.tasks.ArtifactArchiver;
 
 
 public class EkstaziArtifactArchiver extends ArtifactArchiver {
+
+    private ArrayList<FilePath> ekstaziFolders;
+
     @DataBoundConstructor
     public EkstaziArtifactArchiver() {
-        super(".ekstazi/*, .ekstazi/test-results/*", "", false, false);
+        super("**/.ekstazi/*, **/.ekstazi/test-results/*", "", false, false);
+        ekstaziFolders = new ArrayList<FilePath>();
     }
 
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
@@ -26,16 +36,17 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
         try {
             // Remove Ekstazi from list of post-build actions since it is automatically added
             build.getProject().getPublishersList().remove(EkstaziArtifactArchiver.class);
-            FilePath workspacePath = build.getWorkspace();
-            FilePath ekstaziPath = workspacePath.child(".ekstazi");
-            // Check if there are Ekstazi build artifacts
-            if(ekstaziPath.exists()) {
+            this.getEkstaziFolders(build.getWorkspace());
+            if(ekstaziFolders.size() > 0) {
                 // Archive Ekstazi build artifacts
                 result = super.perform(build, launcher, listener);
                 // Remove Ekstazi from workspace
-                ekstaziPath.deleteRecursive();
+                for(FilePath filePath : ekstaziFolders) {
+                    filePath.deleteRecursive();
+                }
+                // ekstaziPath.deleteRecursive();
                 FilePath buildDir = new FilePath(build.getProject().getBuildDir());
-                buildDir = buildDir.child("lastSuccessfulEkstaziBuild");
+                buildDir = buildDir.child("lastEkstaziBuild");
                 // Add a symlink for the last successful Ekstazi build
                 buildDir.symlinkTo(Integer.toString(build.number), listener);
                 listener.getLogger().println("Archiving Ekstazi results.");
@@ -55,6 +66,20 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
 
         public String getDisplayName() {
             return "Archive Ekstazi Artifacts";
+        }
+    }
+
+    public void getEkstaziFolders(FilePath rootFolder)
+            throws IOException, InterruptedException {
+        File root = new File(rootFolder.toURI());
+        File[] filesAndFolders = root.listFiles();
+        for(File file : filesAndFolders) {
+            if(file.isDirectory()) {
+                if(file.toString().contains(".ekstazi") && !file.toString().contains("archive-tmp")) {
+                    ekstaziFolders.add(new FilePath(file));
+                }
+                getEkstaziFolders(new FilePath(file));
+            }
         }
     }
 }

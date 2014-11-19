@@ -14,6 +14,7 @@ import hudson.util.ListBoxModel.Option;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,39 +46,48 @@ public class EkstaziBuilder extends Builder implements Serializable {
             final BuildListener listener) throws IOException, InterruptedException {
 
         // Declare inputs for callable that can be runo n master or slave
-        final FilePath workspace = build.getModuleRoot();
         final FilePath buildWorkspace = build.getWorkspace();
         final FilePath buildDir = new FilePath(build.getProject().getBuildDir());
         final String ekstaziVersion = getDescriptor().getEkstaziVersion();
 
         // Enable archiver for Ekstazi artifacts
+        MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
+        final ArrayList<FilePath> pomFiles= mavenFinder.find();
         if (ekstaziEnable == true) {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
+            ekstaziArchiver.getEkstaziFolders(buildWorkspace);
+            FilePath previousResults = buildDir.child("lastEkstaziBuild");
+            previousResults = previousResults.child("archive");
+            previousResults.copyRecursiveTo(buildWorkspace);
+
         }
 
         // Use callable to support slave nodes
         Callable<String, IOException> task = new Callable<String, IOException>() {
             static final long serialVersionUID = 1L;
             public String call() throws IOException {
-        EkstaziManager ekstaziManager;
-        // Get the POM for this project
-        final String xmlFilePath = workspace.toString()+"/pom.xml";
-        try {
-            ekstaziManager = new EkstaziMavenManager(xmlFilePath, ekstaziVersion);
-            if(ekstaziEnable == true) {
-                // Add a post build step to collect the Ekstazi results
-                ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
-            } else {
-                // remove Ekstazi from POM if it is disabled
-                ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
-                listener.getLogger().println("Modifying pom.xml located at, "+xmlFilePath+" to disable Ekstazi.");
-            }
-                } catch (EkstaziException | SAXException | TransformerException
-                        | ParserConfigurationException e) {
-            listener.getLogger().println("Ekstazi not supported for this project.");
-            e.printStackTrace();
-        }
+                EkstaziManager ekstaziManager;
+                // Get the POM for this project
+                try {
+                    if(pomFiles.size() > 0) {
+                        for( FilePath pomFile : pomFiles) {
+                            ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
+                            if(ekstaziEnable) {
+
+                                // Add a post build step to collect the Ekstazi results
+                                ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
+                            } else {
+                                // remove Ekstazi from POM if it is disabled
+                                ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
+                                listener.getLogger().println("Modifying pom.xml located at, "+pomFile.toString()+" to disable Ekstazi.");
+                            }
+                        }
+                    }
+                } catch (EkstaziException e) {
+                    listener.getLogger().println("Ekstazi not supported for this project.");
+                    e.printStackTrace();
+                        }
                 return InetAddress.getLocalHost().getHostName();
             }
         };

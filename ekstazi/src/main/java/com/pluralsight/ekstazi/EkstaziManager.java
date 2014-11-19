@@ -65,8 +65,7 @@ public abstract class EkstaziManager implements Serializable {
     }
 
     public void disable(FilePath runDirectory, FilePath workspace, 
-            String ekstaziVersion) throws TransformerException, SAXException,
-           IOException, ParserConfigurationException {
+            String ekstaziVersion) {
                if(checkPresent()) {
                    remove();
                }
