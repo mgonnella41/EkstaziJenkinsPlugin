@@ -67,6 +67,7 @@ public class EkstaziBuilder extends Builder implements Serializable {
                 try {
                     if(pomFiles.size() > 0) {
                         for( FilePath pomFile : pomFiles) {
+                            System.out.println(pomFile.toString());
                             ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
                             if(ekstaziEnable) {
 
@@ -79,8 +80,7 @@ public class EkstaziBuilder extends Builder implements Serializable {
                             }
                         }
                     }
-                } catch (EkstaziException | SAXException | TransformerException
-                        | ParserConfigurationException e) {
+                } catch (EkstaziException e) {
                     listener.getLogger().println("Ekstazi not supported for this project.");
                     e.printStackTrace();
                         }

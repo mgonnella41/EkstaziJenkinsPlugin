@@ -17,7 +17,7 @@ import hudson.tasks.ArtifactArchiver;
 public class EkstaziArtifactArchiver extends ArtifactArchiver {
     @DataBoundConstructor
     public EkstaziArtifactArchiver() {
-        super(".ekstazi/*, .ekstazi/test-results/*", "", false, false);
+        super("**/.ekstazi/*, **/.ekstazi/test-results/*", "", false, false);
     }
 
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,

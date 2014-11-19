@@ -20,17 +20,23 @@ public class MavenFinder extends ConfigFinder implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<FilePath> find() throws IOException, InterruptedException {
+    public ArrayList<FilePath> find() {
         ArrayList<FilePath> pomDirectories = new ArrayList<FilePath>();
         ArrayList<String> pomFilter = new ArrayList<String>();
         pomFilter.add("pom.xml");
-        Iterator<File> it = FileUtils.iterateFiles(new File(rootFolder.toURI()), new NameFileFilter(pomFilter), TrueFileFilter.INSTANCE);
+        Iterator<File> it;
+        try {
+            it = FileUtils.iterateFiles(new File(rootFolder.toURI()),
+                    new NameFileFilter(pomFilter), TrueFileFilter.INSTANCE);
         while(it.hasNext()) {
             File file = (File)it.next();
             FilePath filePath = new FilePath(file);
             if(!file.toString().contains("archive-tmp")) {
                 pomDirectories.add(filePath);
             }
+        }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
         return pomDirectories;
     }
