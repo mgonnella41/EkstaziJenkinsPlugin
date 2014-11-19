@@ -25,14 +25,18 @@ import org.xml.sax.SAXException;
 
 public class EkstaziMavenManager extends EkstaziManager implements Serializable {
     static final long serialVersionUID = 2L;
-    private String POMFileName;
+    private FilePath POMFileName;
     private transient Document POMFile;
 
-    public EkstaziMavenManager(String POMFileName, String Version)
+    public EkstaziMavenManager(FilePath POMFileName, String Version)
         throws ParserConfigurationException, SAXException, IOException, EkstaziException {
         super(Version);
         this.POMFileName = POMFileName;
-        this.POMFile = openPOMFile();
+        try {
+            this.POMFile = openPOMFile();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private Node getSurefireNode() {
@@ -94,8 +98,8 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
                 throw new IOException("No previous Ekstazi results found.");
             }
         } catch (SAXException | IOException | ParserConfigurationException |
-                TransformerException e1) {
-            e1.printStackTrace();
+ TransformerException | InterruptedException e1) {
+    e1.printStackTrace();
                 }
     }
 
@@ -140,25 +144,28 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
         try {
             writePOMFile();
             this.POMFile = openPOMFile();
-        } catch (TransformerException |ParserConfigurationException | SAXException | IOException e) {
+        } catch (TransformerException | ParserConfigurationException
+                | SAXException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private Document openPOMFile()
-        throws ParserConfigurationException, SAXException, IOException {
-        // Load Maven pom file
+ throws ParserConfigurationException,
+            SAXException, IOException, InterruptedException {
+       // Load Maven pom file
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(new File(this.POMFileName));
+        Document document = documentBuilder.parse(new File(this.POMFileName.toURI()));
         return document;
     }
 
 
-    private void writePOMFile() throws TransformerException {
+    private void writePOMFile() throws TransformerException, IOException,
+            InterruptedException {
         // Rewrite pom file
         DOMSource source = new DOMSource(POMFile);
-        StreamResult file = new StreamResult(new File(POMFileName));
+        StreamResult file = new StreamResult(new File(POMFileName.toURI()));
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer;
         transformer = transformerFactory.newTransformer();
