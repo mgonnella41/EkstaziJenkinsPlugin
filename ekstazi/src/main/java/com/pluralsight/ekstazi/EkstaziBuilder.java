@@ -46,14 +46,13 @@ public class EkstaziBuilder extends Builder implements Serializable {
             final BuildListener listener) throws IOException, InterruptedException {
 
         // Declare inputs for callable that can be runo n master or slave
-        final FilePath workspace = build.getModuleRoot();
         final FilePath buildWorkspace = build.getWorkspace();
         final FilePath buildDir = new FilePath(build.getProject().getBuildDir());
         final String ekstaziVersion = getDescriptor().getEkstaziVersion();
 
         // Enable archiver for Ekstazi artifacts
         MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
-        ArrayList<FilePath> pomFiles= mavenFinder.find();
+        final ArrayList<FilePath> pomFiles= mavenFinder.find();
         if (ekstaziEnable == true) {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
@@ -63,29 +62,29 @@ public class EkstaziBuilder extends Builder implements Serializable {
         Callable<String, IOException> task = new Callable<String, IOException>() {
             static final long serialVersionUID = 1L;
             public String call() throws IOException {
-        EkstaziManager ekstaziManager;
-        // Get the POM for this project
-        try {
-            if(pomFiles.size() > 0) {
-                for( FilePath pomFile : pomFiles) {
-                    if(ekstaziEnable) {
+                EkstaziManager ekstaziManager;
+                // Get the POM for this project
+                try {
+                    if(pomFiles.size() > 0) {
+                        for( FilePath pomFile : pomFiles) {
+                            ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
+                            if(ekstaziEnable) {
 
-                        ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
-                        // Add a post build step to collect the Ekstazi results
-                        ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
-                    } else {
-                        // remove Ekstazi from POM if it is disabled
-                        ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
-                        listener.getLogger().println("Modifying pom.xml located at, "+pomFile.toString()+" to disable Ekstazi.");
+                                // Add a post build step to collect the Ekstazi results
+                                ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
+                            } else {
+                                // remove Ekstazi from POM if it is disabled
+                                ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
+                                listener.getLogger().println("Modifying pom.xml located at, "+pomFile.toString()+" to disable Ekstazi.");
+                            }
+                        }
                     }
-                }
-            }
-        } catch (EkstaziException | SAXException | TransformerException
-                | ParserConfigurationException e) {
-            listener.getLogger().println("Ekstazi not supported for this project.");
-            e.printStackTrace();
-                }
-        return InetAddress.getLocalHost().getHostName();
+                } catch (EkstaziException | SAXException | TransformerException
+                        | ParserConfigurationException e) {
+                    listener.getLogger().println("Ekstazi not supported for this project.");
+                    e.printStackTrace();
+                        }
+                return InetAddress.getLocalHost().getHostName();
             }
         };
 
