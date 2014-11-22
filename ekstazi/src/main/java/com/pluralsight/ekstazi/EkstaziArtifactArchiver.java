@@ -1,6 +1,12 @@
 package com.pluralsight.ekstazi;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -15,9 +21,13 @@ import hudson.tasks.ArtifactArchiver;
 
 
 public class EkstaziArtifactArchiver extends ArtifactArchiver {
+
+    public ArrayList<FilePath> ekstaziFolders;
+
     @DataBoundConstructor
     public EkstaziArtifactArchiver() {
         super("**/.ekstazi/*, **/.ekstazi/test-results/*", "", false, false);
+        ekstaziFolders = new ArrayList<FilePath>();
     }
 
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
@@ -50,6 +60,20 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
 
         public String getDisplayName() {
             return "Archive Ekstazi Artifacts";
+        }
+    }
+
+    public void getEkstaziFolders(FilePath rootFolder)
+            throws IOException, InterruptedException {
+        File root = new File(rootFolder.toURI());
+        File[] filesAndFolders = root.listFiles();
+        for(File file : filesAndFolders) {
+            if(file.isDirectory()) {
+                if(file.toString().endsWith(".ekstzi")) {
+                    ekstaziFolders.add(new FilePath(file));
+                }
+                getEkstaziFolders(new FilePath(file));
+            }
         }
     }
 }

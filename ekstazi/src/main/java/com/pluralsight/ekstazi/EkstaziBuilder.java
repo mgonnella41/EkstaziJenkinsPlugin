@@ -56,6 +56,10 @@ public class EkstaziBuilder extends Builder implements Serializable {
         if (ekstaziEnable == true) {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
+            ekstaziArchiver.getEkstaziFolders(buildWorkspace);
+            for(FilePath file : ekstaziArchiver.ekstaziFolders) {
+                System.out.println(file.toString());
+            }
         }
 
         // Use callable to support slave nodes
@@ -67,7 +71,6 @@ public class EkstaziBuilder extends Builder implements Serializable {
                 try {
                     if(pomFiles.size() > 0) {
                         for( FilePath pomFile : pomFiles) {
-                            System.out.println(pomFile.toString());
                             ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
                             if(ekstaziEnable) {
 
