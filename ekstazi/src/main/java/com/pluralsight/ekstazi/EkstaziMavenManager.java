@@ -65,7 +65,8 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
         Node configNode = null;
         for(int i = 0; i < configList.getLength(); i++) {
             if(configList.item(i).getParentNode().getTextContent().contains("maven-surefire-plugin")) {
-                configNode = configList.item(i).getParentNode();
+                System.out.println(configList.item(i).getParentNode().getTextContent());
+                configNode = configList.item(i);
                 break;
             }
         }
