@@ -57,6 +57,11 @@ public class EkstaziBuilder extends Builder implements Serializable {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
             ekstaziArchiver.getEkstaziFolders(buildWorkspace);
+            FilePath previousResults = buildDir.child("lastEkstaziBuild");
+            previousResults = previousResults.child("archive");
+            System.out.println(previousResults.toString());
+            previousResults.copyRecursiveTo(buildWorkspace);
+
         }
 
         // Use callable to support slave nodes
