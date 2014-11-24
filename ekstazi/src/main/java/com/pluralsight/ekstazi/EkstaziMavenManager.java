@@ -62,15 +62,23 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
             return null;
         }
         NodeList configList = surefire.getElementsByTagName("configuration");
-        if(configList.getLength() == 0) {
+        Node configNode = null;
+        for(int i = 0; i < configList.getLength(); i++) {
+            if(configList.item(i).getParentNode().getTextContent().contains("maven-surefire-plugin")) {
+                configNode = configList.item(i).getParentNode();
+                break;
+            }
+        }
+        if(configNode == null) {
             String ekstazistring = "<configuration></configuration>";
             Element ekstazinode = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
                 .parse(new ByteArrayInputStream(ekstazistring.getBytes()))
                 .getDocumentElement();
-            surefire.appendChild(POMFile.importNode(ekstazinode, true));
+            configNode = surefire.appendChild(POMFile.importNode(ekstazinode, true));
         }
-        return surefire.getElementsByTagName("configuration").item(0);
+
+        return configNode;
     }
 
     protected void add(FilePath runDirectory, FilePath workspace,
@@ -116,12 +124,6 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
 
             // handle the copying of previous Ekstazi results to the workspace
             runDirectory = runDirectory.child("lastEkstaziBuild");
-            runDirectory = runDirectory.child("archive");
-            try {
-                runDirectory.copyRecursiveTo("*", "", workspace);
-            } catch (InterruptedException | IOException e) {
-                throw new IOException("No previous Ekstazi results found.");
-            }
         } catch (SAXException | IOException | ParserConfigurationException |
  TransformerException | InterruptedException e1) {
     e1.printStackTrace();
