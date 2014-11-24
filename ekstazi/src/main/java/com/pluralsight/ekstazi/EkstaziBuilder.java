@@ -59,7 +59,6 @@ public class EkstaziBuilder extends Builder implements Serializable {
             ekstaziArchiver.getEkstaziFolders(buildWorkspace);
             FilePath previousResults = buildDir.child("lastEkstaziBuild");
             previousResults = previousResults.child("archive");
-            System.out.println(previousResults.toString());
             previousResults.copyRecursiveTo(buildWorkspace);
 
         }
