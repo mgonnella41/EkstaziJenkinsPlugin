@@ -22,7 +22,7 @@ import hudson.tasks.ArtifactArchiver;
 
 public class EkstaziArtifactArchiver extends ArtifactArchiver {
 
-    public ArrayList<FilePath> ekstaziFolders;
+    private ArrayList<FilePath> ekstaziFolders;
 
     @DataBoundConstructor
     public EkstaziArtifactArchiver() {
@@ -36,15 +36,21 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
         try {
             // Remove Ekstazi from list of post-build actions since it is automatically added
             build.getProject().getPublishersList().remove(EkstaziArtifactArchiver.class);
+            this.getEkstaziFolders(build.getWorkspace());
+            if(ekstaziFolders.size() > 0) {
                 // Archive Ekstazi build artifacts
                 result = super.perform(build, launcher, listener);
                 // Remove Ekstazi from workspace
+                for(FilePath filePath : ekstaziFolders) {
+                    filePath.deleteRecursive();
+                }
                 // ekstaziPath.deleteRecursive();
                 FilePath buildDir = new FilePath(build.getProject().getBuildDir());
                 buildDir = buildDir.child("lastEkstaziBuild");
                 // Add a symlink for the last successful Ekstazi build
                 buildDir.symlinkTo(Integer.toString(build.number), listener);
                 listener.getLogger().println("Archiving Ekstazi results.");
+            }
         } catch (IOException | InterruptedException e) {
             listener.getLogger().println("Unable to archive old Ekstazi output.");
         }
@@ -69,7 +75,7 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
         File[] filesAndFolders = root.listFiles();
         for(File file : filesAndFolders) {
             if(file.isDirectory()) {
-                if(file.toString().endsWith(".ekstzi")) {
+                if(file.toString().contains(".ekstazi") && !file.toString().contains("archive-tmp")) {
                     ekstaziFolders.add(new FilePath(file));
                 }
                 getEkstaziFolders(new FilePath(file));
