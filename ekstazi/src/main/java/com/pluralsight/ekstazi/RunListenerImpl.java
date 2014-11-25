@@ -7,12 +7,15 @@ import hudson.model.BuildBadgeAction;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
+import hudson.FilePath;
 import org.xml.sax.SAXException;
 
 import javax.annotation.Nonnull;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 //Listener to all build (to add the Ekstazi badge action)
@@ -56,36 +59,37 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
 
         //If user wants Ekstazi badges for Build History, show 'em
         if(plugin.isActivated()) {
-            // boolean ekstaziEnabled = false;
+            boolean ekstaziEnabled = false;
 
-            // try {
-            //     if (buildWorkspace != null) {
-            //         String pomFilePath = buildWorkspace.toString() + "/pom.xml";
-            //         EkstaziBuilder.DescriptorImpl desc = (EkstaziBuilder.DescriptorImpl) build.getDescriptorByName("EkstaziBuilder");
-            //         String ekstaziVersion = desc.getEkstaziVersion();
+            try {
+                if (buildWorkspace != null) {
 
-            //         EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFilePath, ekstaziVersion);
-            //         ekstaziEnabled = ekstaziManager.isEnabled();
-            //     }
+                    MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
+                    ArrayList<FilePath> pomFiles = mavenFinder.find();
+                    EkstaziBuilder.DescriptorImpl desc = (EkstaziBuilder.DescriptorImpl) build.getDescriptorByName("EkstaziBuilder");
+                    String ekstaziVersion = desc.getEkstaziVersion();
+                    EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(0), ekstaziVersion);
+                    ekstaziEnabled = ekstaziManager.isEnabled();
+                }
 
-            //     build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
+                build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
 
-            //     if(ekstaziEnabled) {
-            //         listener.getLogger().println("Adding ekstazi-enabled badge for current build.");
-            //     } else {
-            //         listener.getLogger().println("Adding ekstazi-disabled badge for current build.");
-            //     }
+                if(ekstaziEnabled) {
+                    listener.getLogger().println("Adding ekstazi-enabled badge for current build.");
+                } else {
+                    listener.getLogger().println("Adding ekstazi-disabled badge for current build.");
+                }
 
-            // } catch (ParserConfigurationException | SAXException | EkstaziException e) {
-            //     listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
-            //     build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
+            } catch (EkstaziException e) {
+                listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
+                build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
             // } catch (FileNotFoundException e) {
-            //     listener.getLogger().println("Unable to find pom file which is a pre-requisite to detect whether ekstazi was enabled or not; adding default badge.)");
-            //     build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
+                // listener.getLogger().println("Unable to find pom file which is a pre-requisite to detect whether ekstazi was enabled or not; adding default badge.)");
+                // build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
             // } catch (IOException e) {
-            //     listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
-            //     build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
-            // }
+                // listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
+                build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
+            }
         }
     }
 }
