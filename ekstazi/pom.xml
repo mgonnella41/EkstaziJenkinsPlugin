@@ -35,6 +35,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>jenkins-test-harness</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
             <version>3.2.3</version>
@@ -49,21 +56,24 @@
                 <version>2.5</version>
             </plugin>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.5.1</version>
-            <configuration>
-                <source>1.7</source>
-                <target>1.7</target>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.jenkins-ci.tools</groupId>
-            <artifactId>maven-hpi-plugin</artifactId>
-            <version>1.95</version>
-        </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <version>1.95</version>
+                <configuration>
+                    <disableTestInjection>true</disableTestInjection>
+                </configuration>
+            </plugin>
 
-    </plugins>
-</build>
+        </plugins>
+    </build>
 
 </project>
