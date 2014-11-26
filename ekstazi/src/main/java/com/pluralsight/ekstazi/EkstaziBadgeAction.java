@@ -18,10 +18,18 @@ public class EkstaziBadgeAction implements BuildBadgeAction {
 
     private final boolean ekstaziEnabled;
     private final boolean animeEnabled;
+    private final String  urlName;
 
     public EkstaziBadgeAction(boolean ekstaziEnabled, boolean animeEnabled) {
         this.ekstaziEnabled = ekstaziEnabled;
         this.animeEnabled   = animeEnabled;
+        this.urlName        = "";
+    }
+
+    public EkstaziBadgeAction(boolean ekstaziEnabled, boolean animeEnabled, String urlName) {
+        this.ekstaziEnabled = ekstaziEnabled;
+        this.animeEnabled   = animeEnabled;
+        this.urlName        = urlName;
     }
 
     public String getTooltip() {
@@ -79,7 +87,7 @@ public class EkstaziBadgeAction implements BuildBadgeAction {
 
     @Override
     public String getUrlName() {
-        return "";
+        return urlName;
     }
 
 }
