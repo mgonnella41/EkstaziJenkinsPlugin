@@ -2,9 +2,7 @@ package com.pluralsight.ekstazi;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildBadgeAction;
-import hudson.model.TaskListener;
+import hudson.model.*;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
 import hudson.FilePath;
@@ -27,17 +25,18 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
 
     @Override
     public void onCompleted(AbstractBuild build, @Nonnull TaskListener listener) {
-        //Remove the EkstaziBadgeAction that was added in onStarted()
-        List<BuildBadgeAction> badges = build.getBadgeActions();
+        //Remove the EkstaziBadgeAction that was added in onStarted(), and any previously added permalinks
+        List<Action> actions = build.getActions();
 
-        for(BuildBadgeAction badge: badges) {
-            if (badge instanceof EkstaziBadgeAction) {
-                build.getActions().remove(badge);
-                break;                                                          //We added only one EkstaziBadgeAction, so it's safe to just break out from here
+        for(Action action: actions) {
+            if (action instanceof EkstaziBadgeAction || action instanceof EkstaziPermalinkProjectAction) {
+                build.getActions().remove(action);
             }
         }
 
-        badgeApply(build, listener, build.getModuleRoot(), false);             //we don't need an animated icon after the build has completed
+        badgeApply(build, listener, build.getModuleRoot(), false);         //we don't need an animated icon after the build has completed
+        permalinkApply(build, listener);                                   //apply permalinks for Ekstazi
+
         super.onCompleted(build, listener);
     }
 
@@ -68,8 +67,11 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
                     ArrayList<FilePath> pomFiles = mavenFinder.find();
                     EkstaziBuilder.DescriptorImpl desc = (EkstaziBuilder.DescriptorImpl) build.getDescriptorByName("EkstaziBuilder");
                     String ekstaziVersion = desc.getEkstaziVersion();
-                    EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(0), ekstaziVersion);
-                    ekstaziEnabled = ekstaziManager.isEnabled();
+
+                    if (pomFiles.size() != 0) {
+                        EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(0), ekstaziVersion);
+                        ekstaziEnabled = ekstaziManager.isEnabled();
+                    }
                 }
 
                 build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
@@ -92,4 +94,16 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
             }
         }
     }
+
+    private void permalinkApply(AbstractBuild build, TaskListener listener) {
+        AbstractProject<?, ?> project = build.getProject();
+        build.addAction(new EkstaziPermalinkProjectAction(project));
+
+        try {
+            project.save();
+        } catch (IOException e) {
+            listener.getLogger().println("Unable to save project changes for Ekstazi permalinks.");
+        }
+    }
+
 }
