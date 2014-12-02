@@ -12,6 +12,11 @@ public class EkstaziPermalink extends PermalinkProjectAction.Permalink {
     private String displayName;
 
     public EkstaziPermalink(int buildNumber, String id, String displayName) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("No ID was provided for Ekstazi permalink.");
+        }
+
         this.buildNumber = buildNumber;
         this.id          = id;
         this.displayName = displayName;
