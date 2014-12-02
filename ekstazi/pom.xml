@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.532.3</version><!-- which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
+        <version>1.538</version><!-- which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
     </parent>
 
     <groupId>com.pluralsight</groupId>
@@ -46,6 +46,13 @@
             <artifactId>maven-model</artifactId>
             <version>3.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>maven-plugin</artifactId>
+            <version>2.8</version>
+        </dependency>
+
     </dependencies>
 
     <build>

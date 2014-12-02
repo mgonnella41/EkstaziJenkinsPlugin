@@ -2,19 +2,17 @@ package com.pluralsight.ekstazi;
 
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.maven.reporters.SurefireAggregatedReport;
 import hudson.model.*;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
-import hudson.FilePath;
-import org.xml.sax.SAXException;
 
 import javax.annotation.Nonnull;
-import javax.xml.parsers.ParserConfigurationException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import hudson.tasks.junit.TestResultAction;
 
 //Listener to all build (to add the Ekstazi badge action)
 @Extension
@@ -36,6 +34,8 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
 
         badgeApply(build, listener, build.getModuleRoot(), false);         //we don't need an animated icon after the build has completed
         permalinkApply(build, listener);                                   //apply permalinks for Ekstazi
+
+        printTestResult(build);
 
         super.onCompleted(build, listener);
     }
@@ -104,6 +104,24 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
         } catch (IOException e) {
             listener.getLogger().println("Unable to save project changes for Ekstazi permalinks.");
         }
+    }
+
+    public void printTestResult(Run run){
+        TestResultAction tra = run.getAction(TestResultAction.class);
+
+        if (tra != null) {
+            System.out.println("[Parent] = " + run.getParent() + ", [TotalCount] = " + tra.getTotalCount() + ", [FailCount] = " + tra.getFailCount() + ", [SkipCount] = " + tra.getSkipCount());
+        } else {
+
+            SurefireAggregatedReport surefireTestResults = run.getAction(SurefireAggregatedReport.class);
+
+            if (surefireTestResults != null) {
+                System.out.println("[SParent] = " + run.getParent() + ", [STotalCount] = " + surefireTestResults.getTotalCount() + ", [SFailCount] = " + surefireTestResults.getFailCount() + ", [SkipCount] = " + surefireTestResults.getSkipCount());
+            } else {
+                System.out.println("[Parent] = " + run.getParent() + ", [TotalCount] = " + 0 + ", [FailCount] = " + "[SkipCount] = " + 0);
+            }
+        }
+
     }
 
 }
