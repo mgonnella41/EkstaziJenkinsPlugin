@@ -77,7 +77,10 @@ public class EkstaziProminentProjectAction implements ProminentProjectAction {
     @Override
     public String getUrlName() {
         //return project.getLastBuild().getAbsoluteUrl();
-        return Jenkins.getInstance().getRootUrl() + project.getLastBuild().getUrl();
+        if(project.getLastBuild() != null) {
+            return Jenkins.getInstance().getRootUrl() + project.getLastBuild().getUrl();
+        }
 
+        return null;
     }
 }
