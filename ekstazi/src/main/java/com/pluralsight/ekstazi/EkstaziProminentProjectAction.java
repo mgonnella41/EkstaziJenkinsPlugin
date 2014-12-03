@@ -22,7 +22,7 @@ public class EkstaziProminentProjectAction implements ProminentProjectAction {
         this.project = project;
     }
 
-    public boolean lastBuildExists() {
+    private boolean lastBuildExists() {
 
         if (project.getLastBuild() != null) {
             return true;
