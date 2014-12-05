@@ -87,7 +87,7 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
         // Build Ekstazi elements to insert
         String skipMeString = "";
         String forceFailingString = "";
-        if(!skipMe) {
+        if(skipMe) {
             skipMeString = "<skipme>true</skipme>";
         }
         if(forceFailing) {

@@ -61,7 +61,7 @@ public abstract class EkstaziManager implements Serializable {
             if(checkPresent()) {
                 remove();
             }
-            add(runDirectory, workspace, ekstaziVersion, true, forceFailing);
+            add(runDirectory, workspace, ekstaziVersion, false, forceFailing);
     }
 
     public void disable(FilePath runDirectory, FilePath workspace, 
@@ -70,7 +70,7 @@ public abstract class EkstaziManager implements Serializable {
                    remove();
                }
                if(features.contains(Feature.ENABLE)) {
-                   add(runDirectory, workspace, ekstaziVersion, false, false);
+                   add(runDirectory, workspace, ekstaziVersion, true, false);
                }
     }
 }
