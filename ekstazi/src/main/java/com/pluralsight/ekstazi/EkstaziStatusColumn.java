@@ -50,7 +50,7 @@ public class EkstaziStatusColumn extends ListViewColumn {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Map<String, String> getLastBuildCauses(Job job) {
+    public Map<String, String> getLastBuildEkstaziStatus(Job job) {
         Run r = job.getLastBuild();
 
         if (r == null)                          //There was no lastBuild, life's a clean slate!

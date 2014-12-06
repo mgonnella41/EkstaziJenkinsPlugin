@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 	<td>
-		<j:set var="entries" value="${it.getLastBuildCauses(job)}" />
+		<j:set var="entries" value="${it.getLastBuildEkstaziStatus(job)}" />
 		<j:choose>
 			<j:when test="${entries != null}">
 				<j:forEach var="entry" varStatus="status" items="${entries}">
