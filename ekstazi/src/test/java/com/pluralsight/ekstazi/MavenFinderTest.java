@@ -25,17 +25,15 @@ public class MavenFinderTest {
         workspaceDir = url.getPath();
 
         // Create nested pom files inside the testResources folder
-        File pomOne   = new File(workspaceDir + "/" + PROJECT_NAME + "/pom.xml");
-        File pomTwo   = new File(workspaceDir + "/" + PROJECT_NAME + "/module-one/pom.xml");
-        File pomThree = new File(workspaceDir + "/" + PROJECT_NAME + "/module-two/pom.xml");
+        File pomOne = new File(workspaceDir + "/" + PROJECT_NAME + "/module-one/pom.xml");
+        File pomTwo = new File(workspaceDir + "/" + PROJECT_NAME + "/module-two/pom.xml");
 
-        pomTwo.  getParentFile().mkdirs();
-        pomThree.getParentFile().mkdirs();
+        pomOne.getParentFile().mkdirs();
+        pomTwo.getParentFile().mkdirs();
 
         try {
-            pomThree.createNewFile();
-            pomTwo.  createNewFile();
-            pomOne.  createNewFile();
+            pomTwo.createNewFile();
+            pomOne.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +42,8 @@ public class MavenFinderTest {
     @After
     public void tearDown() {
         try {
-            FileUtils.deleteDirectory(new File(workspaceDir + "/" + PROJECT_NAME));
+            FileUtils.deleteDirectory(new File(workspaceDir + "/" + PROJECT_NAME + "/module-one"));
+            FileUtils.deleteDirectory(new File(workspaceDir + "/" + PROJECT_NAME + "/module-two"));
         } catch (IOException e) {
             e.printStackTrace();
         }
