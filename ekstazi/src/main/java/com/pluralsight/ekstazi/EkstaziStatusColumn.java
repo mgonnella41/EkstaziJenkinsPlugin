@@ -2,7 +2,6 @@ package com.pluralsight.ekstazi;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -15,7 +14,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //Column showing whether last build was Ekstazi enabled or not, using a badge

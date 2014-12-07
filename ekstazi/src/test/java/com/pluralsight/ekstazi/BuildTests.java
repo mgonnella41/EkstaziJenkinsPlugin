@@ -1,12 +1,10 @@
 package com.pluralsight.ekstazi;
 
-import org.jvnet.hudson.test.JenkinsRule;
 import hudson.maven.MavenModuleSet;
-import hudson.matrix.*;
-import hudson.scm.*;
-
+import hudson.scm.SubversionSCM;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 public class BuildTests {
   @Rule public JenkinsRule j = new JenkinsRule();

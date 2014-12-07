@@ -2,7 +2,6 @@ package com.pluralsight.ekstazi;
 
 
 import hudson.FilePath;
-import hudson.util.IOUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +20,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 public class EkstaziMavenManagerTest {

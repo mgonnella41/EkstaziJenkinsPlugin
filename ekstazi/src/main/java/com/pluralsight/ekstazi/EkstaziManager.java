@@ -2,15 +2,8 @@ package com.pluralsight.ekstazi;
 
 import hudson.FilePath;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
 
 public abstract class EkstaziManager implements Serializable {
     static final long serialVersionUID = 3L;
