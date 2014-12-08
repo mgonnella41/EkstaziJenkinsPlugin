@@ -19,6 +19,11 @@ public abstract class EkstaziManager implements Serializable {
 
     protected EkstaziManager(String Version) throws EkstaziException {
         features = new ArrayList<Feature>();
+
+        if(Version == null) {
+            Version = EkstaziBuilder.DEFAULT_EKSTAZI_VERSION;
+        }
+
         switch (Version) {
             case "4.0.1":
                 // None

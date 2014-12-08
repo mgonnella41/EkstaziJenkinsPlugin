@@ -23,6 +23,8 @@ import java.util.Collections;
 
 // Builder for Ekstazi that inserts 
 public class EkstaziBuilder extends Builder implements Serializable {
+    public static final String DEFAULT_EKSTAZI_VERSION = "4.3.0";
+
     public final boolean ekstaziEnable;
     public final boolean ekstaziForceFailing;
 
@@ -108,6 +110,11 @@ public class EkstaziBuilder extends Builder implements Serializable {
         // Load stored settings
         public DescriptorImpl() {
             load();
+
+            // Set the default version if we weren't able to load it from disk
+            if (EkstaziVersion == null) {
+                EkstaziVersion = DEFAULT_EKSTAZI_VERSION;
+            }
         }
 
 
@@ -125,10 +132,7 @@ public class EkstaziBuilder extends Builder implements Serializable {
 
         // Fill out the drop down selecting version number
         public ListBoxModel doFillEkstaziVersionItems() {
-            // Set default version
-            if (EkstaziVersion == null) {
-                EkstaziVersion = "4.3.0";
-            }
+
             ListBoxModel items = new ListBoxModel(
                     new Option("4.3.0 - November 2014","4.3.0", EkstaziVersion.equals("4.3.0")),
                     new Option("4.2.0 - November 2014","4.2.0", EkstaziVersion.equals("4.2.0")),
