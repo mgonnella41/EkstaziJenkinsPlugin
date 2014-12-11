@@ -1,4 +1,4 @@
-<b>Build status: </b><a href='https://travis-ci.org/petervilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
+<b>Build status: </b><a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
 
 To run in debug mode:  
 1. cd ekstazi  
