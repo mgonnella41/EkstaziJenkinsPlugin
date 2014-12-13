@@ -17,6 +17,10 @@ Support for enabling Ekstazi in Jenkins Maven projects
 ```
 mvn test
 ```
+Code coverage
+```
+<add>
+```
 
 ##To Install
 ```
