@@ -5,16 +5,19 @@ import hudson.FilePath;
 import hudson.model.*;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
+import hudson.remoting.Callable;
 
 import javax.annotation.Nonnull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import java.io.Serializable;
 
 //Listener to all build (to add the Ekstazi badge action)
 @Extension
-public class RunListenerImpl extends RunListener<AbstractBuild> {
+public class RunListenerImpl extends RunListener<AbstractBuild> implements Serializable {
     public RunListenerImpl() {
         super(AbstractBuild.class);
     }
@@ -49,7 +52,7 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
         super.onStarted(build, listener);
     }
 
-    private void badgeApply(AbstractBuild build, TaskListener listener, FilePath buildWorkspace, boolean animeEnabled) {
+    private void badgeApply(AbstractBuild build, TaskListener listener, final FilePath buildWorkspace, boolean animeEnabled) {
         EkstaziBadgePlugin plugin = Jenkins.getInstance().getPlugin(EkstaziBadgePlugin.class);
 
         //If user wants Ekstazi badges for Build History, show 'em
@@ -59,18 +62,39 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
             try {
                 if (buildWorkspace != null) {
 
-                    MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
-                    ArrayList<FilePath> pomFiles = mavenFinder.find();
                     EkstaziBuilder.DescriptorImpl desc = (EkstaziBuilder.DescriptorImpl) build.getDescriptorByName("EkstaziBuilder");
-                    String ekstaziVersion = desc.getEkstaziVersion();
+                    final String ekstaziVersion = desc.getEkstaziVersion();
 
-                    for(int i = 0; i < pomFiles.size(); i++) {
-                        // We don't want to pick up the dummy pom.xml files from our resources/ directory (which gets copied to target/)
-                        if (!pomFiles.get(i).toURI().toString().contains("/dummy-project/")) {
-                            EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(i), ekstaziVersion);
-                            ekstaziEnabled = ekstaziManager.isEnabled();
-                            break;
+                    Callable<String, IOException> task = new Callable<String, IOException>() {
+                        static final long serialVersionUID = 12L;
+                        public String call() throws IOException {
+                            try{
+                                MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
+                                ArrayList<FilePath> pomFiles = mavenFinder.find();
+                                for(int i = 0; i < pomFiles.size(); i++) {
+                                    // We don't want to pick up the dummy pom.xml files from our resources/ directory (which gets copied to target/)
+                                    if (!pomFiles.get(i).toURI().toString().contains("/dummy-project/")) {
+                                        final FilePath remoteFile = pomFiles.get(i);
+                                        EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(remoteFile, ekstaziVersion);
+                                        boolean ekstaziEnabledInner = ekstaziManager.isEnabled();
+                                        if(ekstaziEnabledInner == true) {
+                                            return "true";
+                                        } else {
+                                            return "false";
+                                        }
+                                    }
+                                }
+                            } catch (InterruptedException | EkstaziException e) {
+                                return "false";
+                            }
+                            return("false");
                         }
+                    };
+                    String ekstaziEnabledString = buildWorkspace.getChannel().call(task);
+                    if (ekstaziEnabledString.equals("true")) {
+                        ekstaziEnabled = true;
+                    } else {
+                        ekstaziEnabled = false;
                     }
                 }
 
@@ -82,7 +106,7 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
                     listener.getLogger().println("Adding ekstazi-disabled badge for current build.");
                 }
 
-            } catch (EkstaziException | IOException | InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
                 build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
             }

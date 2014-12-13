@@ -64,7 +64,13 @@ public class EkstaziBuilder extends Builder implements Serializable {
                 EkstaziManager ekstaziManager;
                 // Get the POM for this project
                 MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
-                final ArrayList<FilePath> pomFiles= mavenFinder.find();
+                ArrayList<FilePath> pomFiles = new ArrayList<FilePath>();
+                try{
+                pomFiles = mavenFinder.find();
+                } catch (InterruptedException e) {
+                    listener.getLogger().println("Unable to find POM files.");
+                    e.printStackTrace();
+                }
                 try {
                     if(pomFiles.size() > 0) {
                         for( FilePath pomFile : pomFiles) {

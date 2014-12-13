@@ -4,6 +4,7 @@ import hudson.FilePath;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.io.IOException;
 
 
 public abstract class ConfigFinder implements Serializable {
@@ -14,5 +15,5 @@ public abstract class ConfigFinder implements Serializable {
         this.rootFolder = rootFolder;
     }
 
-    abstract public ArrayList<FilePath> find();
+    abstract public ArrayList<FilePath> find() throws IOException, InterruptedException;
 }

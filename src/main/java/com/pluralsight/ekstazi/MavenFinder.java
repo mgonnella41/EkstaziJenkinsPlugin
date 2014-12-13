@@ -14,30 +14,30 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class MavenFinder extends ConfigFinder implements Serializable {
     static final long serialVersionUID = 5L;
+    ArrayList<FilePath> pomFiles;
 
     MavenFinder(FilePath rootFolder) {
         super(rootFolder);
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<FilePath> find() {
-        ArrayList<FilePath> pomDirectories = new ArrayList<FilePath>();
-        ArrayList<String> pomFilter = new ArrayList<String>();
-        pomFilter.add("pom.xml");
-        Iterator<File> it;
-        try {
-            it = FileUtils.iterateFiles(new File(rootFolder.toURI()),
-                    new NameFileFilter(pomFilter), TrueFileFilter.INSTANCE);
-        while(it.hasNext()) {
-            File file = (File)it.next();
-            FilePath filePath = new FilePath(file);
-            if(!file.toString().contains("archive-tmp")) {
-                pomDirectories.add(filePath);
+    public ArrayList<FilePath> find() throws IOException, InterruptedException {
+        this.pomFiles = new ArrayList<FilePath>();
+        this.getPOMs(rootFolder);
+        return this.pomFiles;
+    }
+
+    // Find POM files
+    public void getPOMs(FilePath rootFolder)
+        throws IOException, InterruptedException {
+        ArrayList<FilePath> filesAndFolders = new ArrayList<FilePath>(rootFolder.list());
+        for(FilePath file : filesAndFolders) {
+            if(file.isDirectory()) {
+                getPOMs(file);
+            } else if(file.toString().endsWith("pom.xml") && !file.toString().contains("archive-tmp")) {
+                this.pomFiles.add(file);
             }
         }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return pomDirectories;
     }
+
 }
