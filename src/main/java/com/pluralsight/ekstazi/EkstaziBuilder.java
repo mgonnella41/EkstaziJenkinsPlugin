@@ -48,8 +48,6 @@ public class EkstaziBuilder extends Builder implements Serializable {
         final String ekstaziVersion = getDescriptor().getEkstaziVersion();
 
         // Enable archiver for Ekstazi artifacts
-        MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
-        final ArrayList<FilePath> pomFiles= mavenFinder.find();
         if (ekstaziEnable == true) {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
@@ -66,6 +64,8 @@ public class EkstaziBuilder extends Builder implements Serializable {
             public String call() throws IOException {
                 EkstaziManager ekstaziManager;
                 // Get the POM for this project
+                MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
+                final ArrayList<FilePath> pomFiles= mavenFinder.find();
                 try {
                     if(pomFiles.size() > 0) {
                         for( FilePath pomFile : pomFiles) {
