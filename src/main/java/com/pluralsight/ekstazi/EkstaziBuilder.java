@@ -69,6 +69,9 @@ public class EkstaziBuilder extends Builder implements Serializable {
                 try {
                     if(pomFiles.size() > 0) {
                         for( FilePath pomFile : pomFiles) {
+                            if(pomFile.toString().contains("dummy-project")) {
+                                    continue;
+                            }
                             ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
                             if(ekstaziEnable) {
 
