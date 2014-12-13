@@ -171,7 +171,7 @@ public class EkstaziMavenManagerTest {
     }
 
     @Test
-    public void isEnabledTest() {
+    public void isEnabledTest() throws IOException, EkstaziException{
         String pomFile = projectDir + "/pom.xml";
         String tempPomFile = projectDir + "/temp-pom.xml";
 
