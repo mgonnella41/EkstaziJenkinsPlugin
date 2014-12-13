@@ -172,7 +172,13 @@ public class EkstaziMavenManagerTest {
 
     @Test
     public void isEnabledTest() {
+        String pomFile = projectDir + "/pom.xml";
+        String tempPomFile = projectDir + "/temp-pom.xml";
+
+        FileUtils.copyFile(new File(pomFile), new File(tempPomFile));
+        EkstaziMavenManager manager = new EkstaziMavenManager(new FilePath(new File(tempPomFile)), EKSTAZI_VERSION);
         Assert.assertTrue(manager.isEnabled());
+        FileUtils.fileDelete(tempPomFile);
     }
 
     @Test
