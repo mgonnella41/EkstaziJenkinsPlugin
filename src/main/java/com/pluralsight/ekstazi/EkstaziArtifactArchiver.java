@@ -67,14 +67,13 @@ public class EkstaziArtifactArchiver extends ArtifactArchiver {
 
     public void getEkstaziFolders(FilePath rootFolder)
             throws IOException, InterruptedException {
-        File root = new File(rootFolder.toURI());
-        File[] filesAndFolders = root.listFiles();
-        for(File file : filesAndFolders) {
+        ArrayList<FilePath> filesAndFolders = new ArrayList<FilePath>(rootFolder.list());
+        for(FilePath file : filesAndFolders) {
             if(file.isDirectory()) {
                 if(file.toString().contains(".ekstazi") && !file.toString().contains("archive-tmp")) {
-                    ekstaziFolders.add(new FilePath(file));
+                    ekstaziFolders.add(file);
                 }
-                getEkstaziFolders(new FilePath(file));
+                getEkstaziFolders(file);
             }
         }
     }

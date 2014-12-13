@@ -51,7 +51,6 @@ public class EkstaziBuilder extends Builder implements Serializable {
         if (ekstaziEnable == true) {
             EkstaziArtifactArchiver ekstaziArchiver = new EkstaziArtifactArchiver();
             build.getProject().getPublishersList().replaceBy(Collections.singleton(ekstaziArchiver));
-            ekstaziArchiver.getEkstaziFolders(buildWorkspace);
             FilePath previousResults = buildDir.child("lastEkstaziBuild");
             previousResults = previousResults.child("archive");
             previousResults.copyRecursiveTo(buildWorkspace);
