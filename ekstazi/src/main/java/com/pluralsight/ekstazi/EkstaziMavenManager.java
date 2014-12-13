@@ -81,6 +81,15 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
         return configNode;
     }
 
+    // Put an empty myExludes file in the workspace if there is none to prevent ekstazi errors
+    public void writeMyExcludes(FilePath workspace) throws IOException,
+            InterruptedException {
+        FilePath myExcludes = workspace.child("myExcludes");
+        if(!myExcludes.exists()) {
+            myExcludes.write("", null);
+        }
+    }
+
     protected void add(FilePath runDirectory, FilePath workspace,
             String ekstaziVersion, boolean skipMe, boolean forceFailing) {
         // Insert Ekstazi into POM
@@ -94,7 +103,7 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
             forceFailingString = "<forcefailing>true</forcefailing>";
         }
         String ekstazistring1 = "<plugin><groupId>org.ekstazi</groupId><artifactId>ekstazi-maven-plugin</artifactId><version>"+ ekstaziVersion+"</version><configuration>"+skipMeString+""+forceFailingString+"</configuration><executions><execution><id>doit</id><goals><goal>select</goal><goal>restore</goal></goals></execution></executions></plugin>";
-        String ekstazistring2 = "<excludesFile>${java.io.tmpdir}/myExcludes</excludesFile>";
+        String ekstazistring2 = "<excludesFile>myExcludes</excludesFile>";
         Element ekstazinode1;
         try {
             ekstazinode1 = DocumentBuilderFactory.newInstance()
@@ -120,6 +129,7 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
 
             // Write the output
             writePOMFile();
+            writeMyExcludes(workspace);
             this.POMFile = openPOMFile();
 
             // handle the copying of previous Ekstazi results to the workspace
