@@ -50,7 +50,7 @@ public class MavenFinderTest {
     }
 
     @Test
-    public void pomDirectoriesTest() {
+    public void pomDirectoriesTest() throws IOException, InterruptedException {
         MavenFinder mavenFinder = new MavenFinder(new FilePath(new File(workspaceDir + "/" + PROJECT_NAME)));
         ArrayList<FilePath> pomDirectories = mavenFinder.find();
 
