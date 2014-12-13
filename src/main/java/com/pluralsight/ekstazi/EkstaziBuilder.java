@@ -27,14 +27,16 @@ public class EkstaziBuilder extends Builder implements Serializable {
 
     public final boolean ekstaziEnable;
     public final boolean ekstaziForceFailing;
+    public final boolean ekstaziOverwrite;
 
     /* Fields in config.jelly must match the parameter names in the "DataBoundConstructor".  The config.jelly is used for
      * job specific config and global.jelly is used for global config
      */
     @DataBoundConstructor
-    public EkstaziBuilder(boolean ekstaziEnable, boolean ekstaziForceFailing) {
+    public EkstaziBuilder(boolean ekstaziEnable, boolean ekstaziForceFailing, boolean ekstaziOverwrite) {
         this.ekstaziEnable = ekstaziEnable;
         this.ekstaziForceFailing = ekstaziForceFailing;
+        this.ekstaziOverwrite = ekstaziOverwrite;
     }
 
     @SuppressWarnings("deprecation")
@@ -57,47 +59,49 @@ public class EkstaziBuilder extends Builder implements Serializable {
 
         }
 
-        // Use callable to support slave nodes
-        Callable<String, IOException> task = new Callable<String, IOException>() {
-            static final long serialVersionUID = 1L;
-            public String call() throws IOException {
-                EkstaziManager ekstaziManager;
-                // Get the POM for this project
-                MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
-                ArrayList<FilePath> pomFiles = new ArrayList<FilePath>();
-                try{
-                pomFiles = mavenFinder.find();
-                } catch (InterruptedException e) {
-                    listener.getLogger().println("Unable to find POM files.");
-                    e.printStackTrace();
-                }
-                try {
-                    if(pomFiles.size() > 0) {
-                        for( FilePath pomFile : pomFiles) {
-                            if(pomFile.toString().contains("dummy-project")) {
-                                    continue;
-                            }
-                            ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
-                            if(ekstaziEnable) {
-
-                                // Add a post build step to collect the Ekstazi results
-                                ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
-                            } else {
-                                // remove Ekstazi from POM if it is disabled
-                                ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
-                                listener.getLogger().println("Modifying pom.xml located at, "+pomFile.toString()+" to disable Ekstazi.");
-                            }
-                        }
+        if(ekstaziOverwrite == false) {
+            // Use callable to support slave nodes
+            Callable<String, IOException> task = new Callable<String, IOException>() {
+                static final long serialVersionUID = 1L;
+                public String call() throws IOException {
+                    EkstaziManager ekstaziManager;
+                    // Get the POM for this project
+                    MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
+                    ArrayList<FilePath> pomFiles = new ArrayList<FilePath>();
+                    try{
+                        pomFiles = mavenFinder.find();
+                    } catch (InterruptedException e) {
+                        listener.getLogger().println("Unable to find POM files.");
+                        e.printStackTrace();
                     }
-                } catch (EkstaziException e) {
-                    listener.getLogger().println("Ekstazi not supported for this project.");
-                    e.printStackTrace();
-                        }
-                return InetAddress.getLocalHost().getHostName();
-            }
-        };
+                    try {
+                        if(pomFiles.size() > 0) {
+                            for( FilePath pomFile : pomFiles) {
+                                if(pomFile.toString().contains("dummy-project")) {
+                                    continue;
+                                }
+                                ekstaziManager = new EkstaziMavenManager(pomFile, ekstaziVersion);
+                                if(ekstaziEnable) {
 
-        launcher.getChannel().call(task);
+                                    // Add a post build step to collect the Ekstazi results
+                                    ekstaziManager.enable(buildDir, buildWorkspace, ekstaziVersion, ekstaziForceFailing);
+                                } else {
+                                    // remove Ekstazi from POM if it is disabled
+                                    ekstaziManager.disable(buildDir, buildWorkspace, ekstaziVersion);
+                                    listener.getLogger().println("Modifying pom.xml located at, "+pomFile.toString()+" to disable Ekstazi.");
+                                }
+                            }
+                        }
+                    } catch (EkstaziException e) {
+                        listener.getLogger().println("Ekstazi not supported for this project.");
+                        e.printStackTrace();
+                    }
+                    return InetAddress.getLocalHost().getHostName();
+                }
+            };
+
+            launcher.getChannel().call(task);
+        }
         return true;
     }
 

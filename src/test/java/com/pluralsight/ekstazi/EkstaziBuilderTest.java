@@ -24,7 +24,7 @@ public class EkstaziBuilderTest {
     @Test
     public void configRoundtripTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject();
-        p.getBuildersList().add(new EkstaziBuilder(true, true));
+        p.getBuildersList().add(new EkstaziBuilder(true, true, false));
         JenkinsRule.WebClient webClient = j.createWebClient();
         HtmlForm form = webClient.getPage(p, "configure").getFormByName("config");
         j.submit(form);
@@ -50,7 +50,7 @@ public class EkstaziBuilderTest {
     public void buildWithEkstaziTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject(PROJECT_NAME);
         p.setScm(new SubversionSCM(PROJECT_REPO));
-        p.getBuildersList().add(new EkstaziBuilder(true, false));
+        p.getBuildersList().add(new EkstaziBuilder(true, false, false));
 
         j.buildAndAssertSuccess(p);
     }
@@ -59,7 +59,7 @@ public class EkstaziBuilderTest {
     public void buildWithoutEkstaziTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject(PROJECT_NAME);
         p.setScm(new SubversionSCM(PROJECT_REPO));
-        p.getBuildersList().add(new EkstaziBuilder(false, false));
+        p.getBuildersList().add(new EkstaziBuilder(false, false, false));
 
         j.buildAndAssertSuccess(p);
     }
