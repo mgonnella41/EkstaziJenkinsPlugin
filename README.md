@@ -1,11 +1,15 @@
-<b>Build status: </b><a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
-[![Coverage Status](https://img.shields.io/coveralls/peterlvilim/EkstaziJenkinsPlugin.svg)](https://coveralls.io/r/peterlvilim/EkstaziJenkinsPlugin)
+<b>Build and test status</b><a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
 
-To run in debug mode:  
-1. cd ekstazi  
-2. ./debug.sh  
-3. Open localhost:8080/jenkins in your web browser  
-4. Currently the common-lang-3 project is configured to use the Ekstazi plugin.  The project will pull HEAD from the remote common-lang3 repo, modify the pom.xml, and run a small subset of the tests. The Ekstazi plugin is enabled under the pre-build steps.  
+<b>Features</b>
+
+<b>To Run Tests</b>
+mvn test
+
+<b>To Install</b>
+
+
+<b>To Debug</b>
+./debug.sh
 
 <b>Note:</b> Before running the build, please check the path for your JDK installation by navigating to:  
 Manage Jenkins -> Configure System -> JDK
