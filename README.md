@@ -1,3 +1,6 @@
+<b>Build status: </b><a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
+[![Coverage Status](https://img.shields.io/coveralls/peterlvilim/EkstaziJenkinsPlugin.svg)](https://coveralls.io/r/peterlvilim/EkstaziJenkinsPlugin)
+
 To run in debug mode:  
 1. cd ekstazi  
 2. ./debug.sh  
