@@ -64,9 +64,13 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
                     EkstaziBuilder.DescriptorImpl desc = (EkstaziBuilder.DescriptorImpl) build.getDescriptorByName("EkstaziBuilder");
                     String ekstaziVersion = desc.getEkstaziVersion();
 
-                    if (pomFiles.size() != 0) {
-                        EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(0), ekstaziVersion);
-                        ekstaziEnabled = ekstaziManager.isEnabled();
+                    for(int i = 0; i < pomFiles.size(); i++) {
+                        // We don't want to pick up the dummy pom.xml files from our resources/ directory (which gets copied to target/)
+                        if (!pomFiles.get(i).toURI().toString().contains("/dummy-project/")) {
+                            EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(pomFiles.get(i), ekstaziVersion);
+                            ekstaziEnabled = ekstaziManager.isEnabled();
+                            break;
+                        }
                     }
                 }
 
@@ -78,14 +82,8 @@ public class RunListenerImpl extends RunListener<AbstractBuild> {
                     listener.getLogger().println("Adding ekstazi-disabled badge for current build.");
                 }
 
-            } catch (EkstaziException e) {
+            } catch (EkstaziException | IOException | InterruptedException e) {
                 listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
-                build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
-            // } catch (FileNotFoundException e) {
-                // listener.getLogger().println("Unable to find pom file which is a pre-requisite to detect whether ekstazi was enabled or not; adding default badge.)");
-                // build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
-            // } catch (IOException e) {
-                // listener.getLogger().println("Unable to detect whether ekstazi was enabled or not; adding default badge.)");
                 build.addAction(new EkstaziBadgeAction(ekstaziEnabled, animeEnabled));
             }
         }
