@@ -6,7 +6,9 @@
 ##Features
 
 ##To Run Tests
-`mvn test`
+```
+mvn test
+```
 
 ##To Install
 ```
@@ -16,4 +18,6 @@ http://yourjenkinsserver:8080/jenkins/reload
 ```
 
 ##To Debug
+```
 mvn hpi:run
+```
