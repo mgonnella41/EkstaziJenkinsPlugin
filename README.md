@@ -9,7 +9,9 @@
 `mvn test`
 
 ##To Install
-
+`mvn install`
+`cp EkstaziJenkinsPlugin.hpi $JENKINS_HOME/plugins`
+`http://yourjenkinsserver:8080/jenkins/reload`
 
 ##To Debug
 ./debug.sh
