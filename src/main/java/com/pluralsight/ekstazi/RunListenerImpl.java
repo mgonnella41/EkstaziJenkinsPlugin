@@ -72,8 +72,8 @@ public class RunListenerImpl extends RunListener<AbstractBuild> implements Seria
                                 MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
                                 ArrayList<FilePath> pomFiles = mavenFinder.find();
                                 for(int i = 0; i < pomFiles.size(); i++) {
-                                    // We don't want to pick up the dummy pom.xml files from our resources/ directory (which gets copied to target/)
-                                    if (!pomFiles.get(i).toURI().toString().contains("/dummy-project/")) {
+                                    // We don't want to pick up the extraneous pom.xml files from our target/ or test/resources/ directory
+                                    if (!pomFiles.get(i).toURI().toString().contains("/target/") && !pomFiles.get(i).toURI().toString().contains("/test/resources/")) {
                                         final FilePath remoteFile = pomFiles.get(i);
                                         EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(remoteFile, ekstaziVersion);
                                         boolean ekstaziEnabledInner = ekstaziManager.isEnabled();
