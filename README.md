@@ -18,8 +18,11 @@ Support for enabling Ekstazi in Jenkins Maven projects
 mvn test
 ```
 Code coverage
+
+The project uses JaCoCo as the code coverage tool to generate coverage reports. These coverage reports can then be analyzed by SonarQube. Assuming the developer has a sonar server up and running, the following sequence of commands can be used to generate and analyze code coverage for the project:
 ```
-<add>
+mvn clean test
+mvn sonar:sonar
 ```
 
 ##To Install

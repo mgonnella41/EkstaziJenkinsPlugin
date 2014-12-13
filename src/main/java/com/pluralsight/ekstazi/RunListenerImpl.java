@@ -68,26 +68,21 @@ public class RunListenerImpl extends RunListener<AbstractBuild> implements Seria
                     Callable<String, IOException> task = new Callable<String, IOException>() {
                         static final long serialVersionUID = 12L;
                         public String call() throws IOException {
+                            String ekstaziResult = "false";
                             try{
                                 MavenFinder mavenFinder = new MavenFinder(buildWorkspace);
                                 ArrayList<FilePath> pomFiles = mavenFinder.find();
                                 for(int i = 0; i < pomFiles.size(); i++) {
-                                    // We don't want to pick up the extraneous pom.xml files from our target/ or test/resources/ directory
-                                    if (!pomFiles.get(i).toURI().toString().contains("/target/") && !pomFiles.get(i).toURI().toString().contains("/test/resources/")) {
-                                        final FilePath remoteFile = pomFiles.get(i);
+                                        FilePath remoteFile = pomFiles.get(i);
                                         EkstaziMavenManager ekstaziManager = new EkstaziMavenManager(remoteFile, ekstaziVersion);
-                                        boolean ekstaziEnabledInner = ekstaziManager.isEnabled();
-                                        if(ekstaziEnabledInner == true) {
-                                            return "true";
-                                        } else {
-                                            return "false";
+                                        if(ekstaziManager.isEnabled() == true) {
+                                            ekstaziResult = "true";
                                         }
-                                    }
                                 }
                             } catch (InterruptedException | EkstaziException e) {
                                 return "false";
                             }
-                            return("false");
+                            return(ekstaziResult);
                         }
                     };
                     String ekstaziEnabledString = buildWorkspace.getChannel().call(task);
