@@ -20,4 +20,7 @@
             <f:checkbox name="ekstaziForceFailing" value="${it.ekstaziForceFailing}"/>
         </f:entry>
     </j:if>
+        <f:entry name="ekstaziOverwrite" title="Disable Ekstazi overwrite" field="ekstaziOverwrite">
+            <f:checkbox name="ekstaziOverwrite" value="${it.ekstaziOverwrite}"/>
+        </f:entry>
 </j:jelly>
