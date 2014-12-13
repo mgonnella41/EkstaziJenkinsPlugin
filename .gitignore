@@ -1,7 +1,7 @@
-ekstazi/work
-ekstazi/target
-ekstazi/.classpath
-ekstazi/.project
-ekstazi/.settings
-ekstazi/.idea
+work
+target
+.classpath
+.project
+.settings
+.idea
 *.iml

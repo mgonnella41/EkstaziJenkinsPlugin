@@ -1,5 +1,3 @@
-before_script: cd ekstazi
-
 language: java
 jdk:
   - oraclejdk7
