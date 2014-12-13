@@ -16,4 +16,4 @@ http://yourjenkinsserver:8080/jenkins/reload
 ```
 
 ##To Debug
-./debug.sh
+mvn hpi:run
