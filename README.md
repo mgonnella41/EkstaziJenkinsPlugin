@@ -13,7 +13,8 @@ Support for enabling Ekstazi in Jenkins Maven projects
 - Support for large multi-module projects
 - Transparent support for distributed builds
 
-##To Run Tests
+##Tests
+To run
 ```
 mvn test
 ```
@@ -25,14 +26,14 @@ mvn clean test
 mvn sonar:sonar
 ```
 
-##To Install
+##Installing
 ```
 mvn install
 cp EkstaziJenkinsPlugin.hpi $JENKINS_HOME/plugins
 http://yourjenkinsserver:8080/jenkins/reload
 ```
 
-##To Debug
+##Debugging
 ```
 mvn hpi:run
 ```
