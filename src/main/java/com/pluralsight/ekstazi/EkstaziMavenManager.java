@@ -50,6 +50,7 @@ public class EkstaziMavenManager extends EkstaziManager implements Serializable 
             if(artifacts.item(i).getTextContent().contains("maven-surefire-plugin"))
             {
                 surefire = artifacts.item(i);
+                break;
             }
         }
         return surefire;
