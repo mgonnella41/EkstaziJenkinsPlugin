@@ -1,15 +1,15 @@
-<b>Build and test status</b><a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
+#Ekstazi Jenkins Plugin
 
-<b>Features</b>
+##Build and tests
+<a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
 
-<b>To Run Tests</b>
-mvn test
+##Features
 
-<b>To Install</b>
+##To Run Tests
+`mvn test`
+
+##To Install
 
 
-<b>To Debug</b>
+##To Debug
 ./debug.sh
-
-<b>Note:</b> Before running the build, please check the path for your JDK installation by navigating to:  
-Manage Jenkins -> Configure System -> JDK
