@@ -26,6 +26,7 @@ mvn clean test
 mvn sonar:sonar
 ```
 Writing tests
+
 All tests are located in the src/test/java/com/pluralsight/ekstazi folder and use Jenkins Rule for integration tests, Mockito for unit tests, and HtmlUnit for user interface testing.
 
 ##Installing
