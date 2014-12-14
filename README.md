@@ -1,7 +1,7 @@
 #Ekstazi Jenkins Plugin
 Support for enabling Ekstazi in Jenkins Maven projects
 
-##Build and tests
+##Build and test status
 <a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
 
 ##Features
