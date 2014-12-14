@@ -36,10 +36,10 @@ http://yourjenkinsserver:8080/jenkins/reload
 ##Debugging
 ```
 mvn hpi:run
+Navigate to http://localhost:8080/jenkins
 ```
 
-
-##Future Enhancements
+##Potential Future Enhancements
 - Optimize copying of artifacts
 - Add -DfailIfNoTests=false by default
 - Integrate coveralls
