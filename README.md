@@ -5,8 +5,8 @@ Support for enabling Ekstazi in Jenkins Maven projects
 <a href='https://travis-ci.org/peterlvilim/EkstaziJenkinsPlugin'><img src='https://secure.travis-ci.org/peterlvilim/EkstaziJenkinsPlugin.png?branch=master'></a>
 
 ##Features
-- Automatic POM patching to enable Ekstazi
-- Support for multiple Ekstazi versions
+- Automatic POM patching to enable Ekstazi (can be disabled if Ekstazi already present)
+- Support for multiple Ekstazi versions (Global configuration option)
 - Per build Ekstazi options (i.e. forcefailing, skipme)
 - Ekstazi status icons in Jenkins web interface
 - Archival and Permalinking of Ekstazi results
