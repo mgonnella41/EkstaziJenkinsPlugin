@@ -37,3 +37,10 @@ http://yourjenkinsserver:8080/jenkins/reload
 ```
 mvn hpi:run
 ```
+
+
+##Future Enhancements
+- Optimize copying of artifacts
+- Add -DfailIfNoTests=false by default
+- Integrate coveralls
+- Integrate Ekstazi with Travis CI
