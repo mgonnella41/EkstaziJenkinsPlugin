@@ -168,8 +168,6 @@
                 </executions>
             </plugin>
         </plugins>
-	</build>
-        </plugins>
 
         <testResources>
             <testResource>
